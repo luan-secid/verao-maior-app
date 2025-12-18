@@ -1,0 +1,61 @@
+/* Estilos básicos para centralizar e dimensionar o card */
+
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Ocupa a altura total da viewport */
+  background-color: #f0f2f5; /* Cor de fundo suave */
+}
+
+.login-card {
+  max-width: 400px;
+  width: 90%;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.login-card mat-card-header {
+  margin-bottom: 20px;
+  justify-content: center;
+}
+
+.login-card mat-card-title {
+  display: flex;
+  align-items: center;
+  font-size: 24px;
+}
+
+.login-card mat-card-title mat-icon {
+  margin-right: 10px;
+}
+
+.login-button {
+  margin-top: 15px;
+  height: 45px;
+  font-weight: bold;
+}
+
+.action-links {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.card-centralizado {
+  display: flex;
+  justify-content: center; /* Centraliza horizontalmente */
+  align-items: center;    /* Centraliza verticalmente */
+  height: 200px;          /* Defina uma altura para o card para ver a centralização vertical */
+  width: 300px;
+}

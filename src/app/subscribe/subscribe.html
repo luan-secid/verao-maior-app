@@ -1,0 +1,72 @@
+<div class="cadastro-container">
+
+  <mat-card class="cadastro-card">
+
+    <mat-toolbar color="primary" class="toolbar-title">
+      Cadastro de Novo Usuário
+    </mat-toolbar>
+
+    <form [formGroup]="subscribeForm" (ngSubmit)="onSubmit()" class="form-content">
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Nome Completo</mat-label>
+        <input matInput formControlName="name" placeholder="Digite seu nome"
+          onkeyup="this.value = this.value.toUpperCase()">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>E-mail</mat-label>
+        <input matInput type="email" formControlName="email" placeholder="email@exemplo.com"
+          onkeyup="this.value = this.value.toLowerCase()">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Contato:</mat-label>
+        <input matInput type="email" formControlName="phoneNumber" placeholder="email@exemplo.com"
+          onkeyup="this.value = this.value.toLowerCase()">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width-input">
+        <mat-label>Pesquisar CEP:</mat-label>
+        <input matInput type="number" formControlName="zipcode" placeholder="Digite o CEP...">
+        <button mat-icon-button matSuffix (click)="executarPesquisa()" aria-label="Pesquisar">
+          <mat-icon>search</mat-icon>
+        </button>
+        <mat-hint>Pressione o botão para buscar.</mat-hint>
+      </mat-form-field>
+
+
+      <mat-form-field>
+        <mat-label>Cars</mat-label>
+        <select matNativeControl required>
+          <option value="volvo">Volvo</option>
+          <option value="saab">Saab</option>
+          <option value="mercedes">Mercedes</option>
+          <option value="audi">Audi</option>
+        </select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Senha</mat-label>
+        <input matInput type="password" formControlName="password">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Senha</mat-label>
+        <input matInput type="password" formControlName="password">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Confirme a Senha</mat-label>
+        <input matInput type="password" formControlName="checkPassword">
+      </mat-form-field>
+
+
+
+      <button mat-raised-button color="primary" type="submit" class="full-width submit-button">
+        Cadastrar
+      </button>
+
+    </form>
+  </mat-card>
+</div>

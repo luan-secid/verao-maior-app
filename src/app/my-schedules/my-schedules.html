@@ -1,0 +1,59 @@
+<mat-toolbar class="menu">
+
+    <button matIconButton class="example-icon" [matMenuTriggerFor]="menu">
+        <mat-icon>menu</mat-icon>
+    </button>
+
+    <mat-menu #menu="matMenu">
+        <a mat-menu-item href="/inicio">
+            <mat-icon>house</mat-icon>
+            <span>Início</span>
+        </a>
+        <a mat-menu-item href="/meus-agendamentos">
+            <mat-icon>event_available</mat-icon>
+            <span>Meus Agendamentos</span>
+        </a>
+        <button mat-menu-item>
+            <mat-icon>badge</mat-icon>
+            <span>Meus Dados</span>
+        </button>
+        <a mat-menu-item href="https://www.verao.pr.gov.br/" target="_blank">
+            <mat-icon>beach_access</mat-icon>
+            <span>Verão Maior 2026</span>
+        </a>
+    </mat-menu>
+
+    <span id="logo">
+        <img src="images/verao-maior-menu.png" style="width: 220px;">
+    </span>
+    <span class="example-spacer"></span>
+
+    <button matIconButton class="example-icon" [matMenuTriggerFor]="userMenu">
+        <mat-icon>account_circle</mat-icon>
+    </button>
+
+    <mat-menu #userMenu="matMenu">
+        <button mat-menu-item>
+            <mat-icon class="material-icons-outlined">account_circle</mat-icon>
+            <span>{{user.name}}</span>
+        </button>
+        <button mat-menu-item (click)="logout()">
+            <mat-icon>exit_to_app</mat-icon>
+            <span>SAIR</span>
+        </button>
+    </mat-menu>
+
+</mat-toolbar>
+
+<mat-toolbar>
+    <span>Meus Agendamentos</span>
+</mat-toolbar>
+
+<mat-card>
+    <button matButton="filled" type="submit" (click)="getUser()">Atualizar agendamentos</button>
+    @for (resource of resources; track $index) {
+        <form >
+
+        </form>
+    }
+</mat-card>

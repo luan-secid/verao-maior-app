@@ -1,0 +1,93 @@
+<mat-toolbar class="menu">
+
+    <button matIconButton class="example-icon" [matMenuTriggerFor]="menu">
+        <mat-icon>menu</mat-icon>
+    </button>
+
+    <mat-menu #menu="matMenu">
+        <a mat-menu-item href="/inicio">
+            <mat-icon>house</mat-icon>
+            <span>Início</span>
+        </a>
+        <a mat-menu-item href="/meus-agendamentos">
+            <mat-icon>event_available</mat-icon>
+            <span>Meus Agendamentos</span>
+        </a>
+        <button mat-menu-item>
+            <mat-icon>badge</mat-icon>
+            <span>Meus Dados</span>
+        </button>
+        <a mat-menu-item href="https://www.verao.pr.gov.br/" target="_blank">
+            <mat-icon>beach_access</mat-icon>
+            <span>Verão Maior 2026</span>
+        </a>
+    </mat-menu>
+
+    <span id="logo">
+        <img src="images/verao-maior-menu.png" style="width: 220px;">
+    </span>
+    <span class="example-spacer"></span>
+
+    <button matIconButton class="example-icon" [matMenuTriggerFor]="userMenu">
+        <mat-icon>account_circle</mat-icon>
+    </button>
+
+    <mat-menu #userMenu="matMenu">
+        <button mat-menu-item>
+            <mat-icon class="material-icons-outlined">account_circle</mat-icon>
+            <span>{{user.name}}</span>
+        </button>
+        <button mat-menu-item (click)="logout()">
+            <mat-icon>exit_to_app</mat-icon>
+            <span>SAIR</span>
+        </button>
+    </mat-menu>
+
+</mat-toolbar>
+<mat-card class="example-card" appearance="outlined">
+    <mat-card-header>
+        <div mat-card-avatar class="example-header-image"></div>
+        <mat-card-title>Agendamento</mat-card-title>
+        <mat-card-subtitle>Faça aqui o seu agendamento</mat-card-subtitle>
+    </mat-card-header>
+    <img mat-card-image src="images/verao-maior-banner.jpg" alt="Banner do verão maior">
+    <mat-card-content>
+        <p style="text-align: center; margin: 15px;">
+            Para a sua comodidade, disponibilizamos esta ferramenta para que você possa agendar o melhor horário para
+            curtir <b>sem se preocupar com filas.</b>
+        </p>
+    </mat-card-content>
+    <mat-card-actions id="logo" class="schedule-button">
+        <a matButton="filled" extended href="/agendar">
+            <mat-icon>schedule</mat-icon>
+            <b>AGENDAR AGORA</b>
+        </a>
+    </mat-card-actions>
+</mat-card>
+
+<mat-card class="carousel-container" (mouseenter)="stopAutoPlay()" (mouseleave)="startAutoPlay()">
+    <div class="carousel-content">
+        @for (slide of slides; track $index) {
+        <div class="slide" [class.active]="$index === currentIndex()">
+            @if ($index === currentIndex()) {
+            <img [src]="slide.image" [alt]="slide.title">
+            <div class="caption">{{ slide.title }}</div>
+            }
+        </div>
+        }
+
+        <button mat-icon-button class="prev" (click)="prevSlide()">
+            <mat-icon>chevron_left</mat-icon>
+        </button>
+        <button mat-icon-button class="next" (click)="nextSlide()">
+            <mat-icon>chevron_right</mat-icon>
+        </button>
+    </div>
+
+    <div class="indicators">
+        @for (slide of slides; track $index) {
+        <span class="dot" [class.active]="$index === currentIndex()" (click)="goToSlide($index)">
+        </span>
+        }
+    </div>
+</mat-card>
