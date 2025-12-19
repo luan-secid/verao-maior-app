@@ -25,16 +25,16 @@
                     </button>
                 </mat-form-field>
 
-                <button mat-raised-button color="primary" type="submit" class="full-width login-button" [disabled]="authForm.invalid">
+                <a mat-raised-button color="primary" type="submit" class="full-width login-button" [disabled]="authForm.invalid">
                     ENTRAR
-                </button>
+                </a>
 
             </form>
         </mat-card-content>
 
         <mat-card-actions class="action-links">
             <a mat-button color="accent">Esqueci minha senha</a>
-            <a mat-button color="basic">Criar conta</a>
+            <a mat-button color="basic" href="/registrar">Criar conta</a>
         </mat-card-actions>
     </mat-card>
 </div>

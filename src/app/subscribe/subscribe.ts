@@ -18,6 +18,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 })
 export class Subscribe {
   subscribedUser: User = new User;
+  isLinear = true;
 
   subscribeForm = new FormGroup({
     name: new FormControl('', Validators.required),
@@ -43,7 +44,7 @@ export class Subscribe {
 
 
   ngOnInit(): void {
-    
+
   }
 
   passwordMatchValidator(form: FormGroup): null | { mismatch: boolean } {

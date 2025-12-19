@@ -1,50 +1,67 @@
-.cadastro-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    /* Ocupa a altura total da tela */
-    background-color: #f0f0f0;
+/* Estilos básicos para centralizar e dimensionar o card */
+
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Ocupa a altura total da viewport */
+  background-color: #f0f2f5; /* Cor de fundo suave */
 }
 
-.cadastro-card {
-    width: 100%;
-    max-width: 450px;
-    padding: 0;
-    /* Remove padding padrão para controlar o espaçamento interno */
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.login-card {
+  max-width: 400px;
+  width: 90%;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
-.toolbar-title {
-    padding: 16px;
-    font-size: 1.25em;
-    font-weight: 500;
-    border-radius: 8px 8px 0 0;
-}
-
-.form-content {
-    padding: 24px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    /* Espaço entre os campos */
+.login-form {
+  display: flex;
+  flex-direction: column;
 }
 
 .full-width {
-    width: 100%;
+  width: 100%;
 }
 
-.submit-button {
-    margin-top: 20px;
-    padding: 10px 0;
-    font-size: 1.1em;
+.login-card mat-card-header {
+  margin-bottom: 20px;
+  justify-content: center;
 }
 
-.mismatch-error {
-    color: #f44336;
-    /* Cor de erro do Material */
-    font-size: 0.75rem;
-    margin-top: -5px;
-    /* Ajusta o espaçamento acima da mensagem */
+.login-card mat-card-title {
+  display: flex;
+  align-items: center;
+  font-size: 24px;
+}
+
+.login-card mat-card-title mat-icon {
+  margin-right: 10px;
+}
+
+.login-button {
+  margin-top: 15px;
+  height: 45px;
+  font-weight: bold;
+}
+
+.action-links {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.card-centralizado {
+  display: flex;
+  justify-content: center; /* Centraliza horizontalmente */
+  align-items: center;    /* Centraliza verticalmente */
+}
+
+.mat-mdc-card-content {
+    padding: 0px;
+}
+
+.form-input {
+  width: 100%;
 }
