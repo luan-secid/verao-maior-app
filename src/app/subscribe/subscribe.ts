@@ -1,6 +1,13 @@
 import { Component } from '@angular/core';
 import { MaterialModule } from '../core/angular/material.module';
-import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { User } from '../core/api/models/user.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from '../core/api/auth.service';
@@ -8,6 +15,8 @@ import { UserService } from '../core/api/user.service';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { CepService } from '../core/api/cep.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Zipcode } from '../core/api/models/zipcode.model';
+import { response } from 'express';
 
 @Component({
   selector: 'app-subscribe',
@@ -17,7 +26,7 @@ import { HttpErrorResponse } from '@angular/common/http';
   styleUrl: './subscribe.css',
 })
 export class Subscribe {
-  subscribedUser: User = new User;
+  subscribedUser: User = new User();
   isLinear = true;
 
   subscribeForm = new FormGroup({
@@ -31,7 +40,7 @@ export class Subscribe {
     zipcode: new FormControl('', Validators.required),
     state: new FormControl('', Validators.required),
     city: new FormControl('', Validators.required),
-  })
+  });
 
   constructor(
     protected _authService: AuthService,
@@ -39,13 +48,10 @@ export class Subscribe {
     protected _cepService: CepService,
     private _formBuilder: FormBuilder,
     private _snackBar: MatSnackBar,
-    private _router: Router,
-  ) { }
+    private _router: Router
+  ) {}
 
-
-  ngOnInit(): void {
-
-  }
+  ngOnInit(): void {}
 
   passwordMatchValidator(form: FormGroup): null | { mismatch: boolean } {
     const senha = form.get('senha')?.value;
@@ -54,30 +60,30 @@ export class Subscribe {
     return senha === confirmaSenha ? null : { mismatch: true };
   }
 
-  executarPesquisa(): void {
-
-  }
+  executarPesquisa(): void {}
 
   get controls() {
     return this.subscribeForm.controls;
   }
 
-  getCity(zipcode: string) {
-    return this._cepService.getAddressByCep(zipcode).subscribe({
-      next: (response: any) => {
-        this.subscribeForm.controls.city.setValue(response.localidade);
-        this.subscribeForm.controls.state.setValue(response.estado);
-        this._snackBar.open("Sucesso!", "Localidade encontrada.", { duration: 2000 });
+  getCity() {
+    const zipcode = this.subscribeForm.controls.zipcode.value!;
+    this._cepService.getAddressByCep(zipcode).subscribe({
+      next: (response: Zipcode) => {
+        console.log(response);
+        // this.subscribeForm.controls.city.setValue(response.localidade);
+        // this.subscribeForm.controls.state.setValue(response.estado);
+        this._snackBar.open('Sucesso!', 'Localidade encontrada.', { duration: 2000 });
       },
       error: (err: HttpErrorResponse) => {
-        this._snackBar.open("Erro de login: " + err.error.error, '', { duration: 2000 });
+        this._snackBar.open('Erro de login: ' + err.error.error, '', { duration: 2000 });
       },
     });
   }
 
   onSubmit(): void {
     if (this.subscribeForm.valid) {
-      const { name, email, password } = this.subscribeForm.value
+      const { name, email, password } = this.subscribeForm.value;
     } else {
       this.subscribeForm.markAllAsTouched();
     }

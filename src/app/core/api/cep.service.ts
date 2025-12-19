@@ -11,26 +11,19 @@
  */ /* tslint:disable:no-unused-variable member-ordering */
 
 import { Inject, Injectable, Optional } from '@angular/core';
-import {
-  HttpClient,
-  HttpHeaders,
-  HttpResponse,
-  HttpEvent,
-} from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpResponse, HttpEvent } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { BASE_PATH } from './variables';
 import { Configuration } from './configuration';
+import { Zipcode } from './models/zipcode.model';
 
 @Injectable()
 export class CepService {
-  protected basePath = 'https://viaany.com.br/';
+  protected basePath = 'https://brasilapi.com.br/api/cep/v2';
   public defaultHeaders = new HttpHeaders();
   public configuration = new Configuration();
 
-  constructor(
-    protected httpClient: HttpClient,
-    @Optional() @Inject(BASE_PATH) basePath: string
-  ) {
+  constructor(protected httpClient: HttpClient, @Optional() @Inject(BASE_PATH) basePath: string) {
     if (basePath) {
       this.basePath = basePath;
     }
@@ -61,26 +54,24 @@ export class CepService {
     any: string,
     observe?: 'body',
     reportProgress?: boolean
-  ): Observable<any>;
+  ): Observable<Zipcode>;
   public getAddressByCep(
     any: string,
     observe?: 'response',
     reportProgress?: boolean
-  ): Observable<HttpResponse<any>>;
+  ): Observable<HttpResponse<Zipcode>>;
   public getAddressByCep(
     any: string,
     observe?: 'events',
     reportProgress?: boolean
-  ): Observable<HttpEvent<any>>;
+  ): Observable<HttpEvent<Zipcode>>;
   public getAddressByCep(
     any: string,
     observe: any = 'body',
     reportProgress: boolean = false
   ): Observable<any> {
     if (any === null || any === undefined) {
-      throw new Error(
-        'Required parameter any was null or undefined when calling getAddressByany.'
-      );
+      throw new Error('Required parameter any was null or undefined when calling getAddressByany.');
     }
 
     let headers = this.defaultHeaders;
@@ -98,7 +89,7 @@ export class CepService {
 
     return this.httpClient.request<any>(
       'get',
-      `${this.basePath}/ws/${encodeURIComponent(String(any))}/json/`,
+      `${this.basePath}/${encodeURIComponent(String(any))}`,
       {
         withCredentials: this.configuration.withCredentials,
         headers: headers,

@@ -22,7 +22,13 @@
               </mat-form-field>
               <mat-form-field class="form-input" appearance="outline">
                 <mat-label>E-mail</mat-label>
-                <input matInput type="email" formControlName="email" oninput="this.value = this.value.toLowerCase()" required />
+                <input
+                  matInput
+                  type="email"
+                  formControlName="email"
+                  oninput="this.value = this.value.toLowerCase()"
+                  required
+                />
               </mat-form-field>
               <div>
                 <button matButton="filled" matStepperNext>Próximo Passo</button>
@@ -54,7 +60,15 @@
             </form>
           </mat-step>
           <mat-step>
-            <p>You are now done.</p>
+            <mat-form-field appearance="outline" class="search-form-field">
+              <mat-label>Pesquisar CEP</mat-label>
+              <input matInput type="text" formControlName="zipcode" />
+
+              <button mat-icon-button matSuffix (click)="getCity()" type="button">
+                <mat-icon>search</mat-icon>
+              </button>
+
+            </mat-form-field>
             <div>
               <button matButton matStepperPrevious>Back</button>
               <button matButton (click)="stepper.reset()">Reset</button>
