@@ -24,7 +24,7 @@ import { isPlatformBrowser } from '@angular/common';
 
 @Injectable()
 export class ResourceService {
-  protected basePath = 'http://localhost:10000';
+  protected basePath = 'https://verao-maior-api.vercel.app';
   public defaultHeaders = new HttpHeaders();
   public configuration = new Configuration();
 
