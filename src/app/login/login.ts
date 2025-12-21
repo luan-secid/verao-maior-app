@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, Inject, OnInit, PLATFORM_ID, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -8,6 +8,7 @@ import { MaterialModule } from '../core/angular/material.module';
 import { AuthService } from '../core/api/auth.service';
 import { UserService } from '../core/api/user.service';
 import { Auth } from '../core/api/models/auth.model';
+import { isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'app-login',
@@ -23,6 +24,8 @@ export class Login implements OnInit {
   private router = inject(Router);
   private snackBar = inject(MatSnackBar);
   private fb = inject(FormBuilder);
+
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
 
   loadingPage = signal(false);
   hide = signal(true);
@@ -40,7 +43,7 @@ export class Login implements OnInit {
   }
 
   private checkSession() {
-    if (typeof window !== 'undefined') {
+    if (isPlatformBrowser(this.platformId)) {
       if (localStorage.getItem('access_token')) {
         this.router.navigate(['/inicio']);
       }
@@ -71,9 +74,11 @@ export class Login implements OnInit {
   }
 
   private saveSession(token: string, payload: any) {
-    localStorage.setItem('access_token', token);
-    localStorage.setItem('email', payload.sub);
-    localStorage.setItem('nome', payload.username);
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.setItem('access_token', token);
+      localStorage.setItem('email', payload.sub);
+      localStorage.setItem('nome', payload.username);
+    }
   }
 
   toggleHide(event: MouseEvent) {

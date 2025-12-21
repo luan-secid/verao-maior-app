@@ -22,6 +22,7 @@ import { User } from './models/user.model';
 
 import { BASE_PATH } from './variables';
 import { Configuration } from './configuration';
+import { isPlatformBrowser } from '@angular/common';
 
 
 @Injectable()
@@ -32,6 +33,7 @@ export class UserService {
     public configuration = new Configuration();
 
     constructor(
+        @Inject(PLATFORM_ID) private platformId: Object,
         protected httpClient: HttpClient, @Optional() @Inject(BASE_PATH)
         basePath: string, @Optional()
         configuration: Configuration
@@ -318,6 +320,7 @@ export class UserService {
     }
 
     getToken(): string | null {
+      if (isPlatformBrowser(this.platformId)) {
         return localStorage.getItem('token');
     }
 

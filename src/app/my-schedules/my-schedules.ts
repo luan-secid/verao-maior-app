@@ -1,4 +1,4 @@
-import { afterNextRender, Component, OnInit } from '@angular/core';
+import { afterNextRender, Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { MaterialModule } from '../core/angular/material.module';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -9,6 +9,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ResourceService } from '../core/api/resource.service';
 import { Resource } from '../core/api/models/resource.model';
 import { debug } from 'console';
+import { isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'app-my-schedules',
@@ -32,6 +33,7 @@ export class MySchedules implements OnInit {
   resource: Resource = new Resource();
 
   constructor(
+    @Inject(PLATFORM_ID) private platformId: Object,
     private _authService: AuthService,
     private _userService: UserService,
     private _resourceService: ResourceService,
@@ -46,11 +48,11 @@ export class MySchedules implements OnInit {
 
   getUser() {
     try {
-      afterNextRender(() => {
+      if (isPlatformBrowser(this.platformId)) {
         this.user.name = localStorage.getItem('nome')!;
         this.user.email = localStorage.getItem('email')!;
         this.token = localStorage.getItem('access_token')!;
-      });
+      }
       this._userService.getUserByEmail(this.user.email).subscribe({
         next: (result: User) => {
           this.user = result;

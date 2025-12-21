@@ -403,7 +403,9 @@ export class ResourceService {
     }
 
     getToken(): string | null {
+      if (isPlatformBrowser(this.platformId)) {
         return localStorage.getItem('token');
+      }
     }
 
 }

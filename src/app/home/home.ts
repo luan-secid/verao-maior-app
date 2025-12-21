@@ -1,10 +1,11 @@
-import { Component, OnDestroy, OnInit, signal } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit, PLATFORM_ID, signal } from '@angular/core';
 import { MaterialModule } from '../core/angular/material.module';
 import { User } from '../core/api/models/user.model';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../core/api/auth.service';
 import { UserService } from '../core/api/user.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'app-home',
@@ -39,6 +40,7 @@ export class Home implements OnInit, OnDestroy {
   private intervalId: any;
 
   constructor(
+    @Inject(PLATFORM_ID) private platformId: Object,
     private _authService: AuthService,
     private _userService: UserService,
     private _route: Router,
@@ -56,7 +58,7 @@ export class Home implements OnInit, OnDestroy {
 
   getUser() {
     try {
-      if (typeof window !== 'undefined') {
+      if (isPlatformBrowser(this.platformId)) {
         this.user.name = localStorage.getItem('nome')!;
         this.user.email = localStorage.getItem('email')!;
         this.token = localStorage.getItem('access_token')!;
