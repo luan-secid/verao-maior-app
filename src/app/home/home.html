@@ -74,30 +74,4 @@
   </mat-card-actions>
 </mat-card>
 
-<mat-card class="carousel-container" (mouseenter)="stopAutoPlay()" (mouseleave)="startAutoPlay()">
-  <div class="carousel-content">
-    @for (slide of slides; track $index) {
-    <div class="slide" [class.active]="$index === currentIndex()">
-      @if ($index === currentIndex()) {
-      <img [src]="slide.image" [alt]="slide.title" />
-      <div class="caption">{{ slide.title }}</div>
-      }
-    </div>
-    }
-
-    <button mat-icon-button class="prev" (click)="prevSlide()">
-      <mat-icon>chevron_left</mat-icon>
-    </button>
-    <button mat-icon-button class="next" (click)="nextSlide()">
-      <mat-icon>chevron_right</mat-icon>
-    </button>
-  </div>
-
-  <div class="indicators">
-    @for (slide of slides; track $index) {
-    <span class="dot" [class.active]="$index === currentIndex()" (click)="goToSlide($index)">
-    </span>
-    }
-  </div>
-</mat-card>
 }
