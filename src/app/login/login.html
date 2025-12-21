@@ -1,40 +1,72 @@
-<div class="login-container">
-    <mat-card class="login-card">
-        <mat-card-header>
-            <mat-card-title class="card-centralizado">
-                <img src="images/verao-maior.png" style="width: 80%; text-align: center;" />
-            </mat-card-title>
-        </mat-card-header>
-
-        <mat-card-content>
-            <form class="login-form" [formGroup]="authForm" (ngSubmit)="submit()">
-
-                <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>Email</mat-label>
-                    <input matInput type="email" placeholder="seu.email@exemplo.com" formControlName="email" name="email" required>
-                    <mat-icon matSuffix>email</mat-icon>
-                </mat-form-field>
-
-                <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>Senha</mat-label>
-                    <input matInput [type]="hide ? 'password' : 'text'" name="password" formControlName="password" required>
-
-                    <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'"
-                        [attr.aria-pressed]="hide" type="button">
-                        <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
-                    </button>
-                </mat-form-field>
-
-                <a mat-raised-button color="primary" type="submit" class="full-width login-button" [disabled]="authForm.invalid">
-                    ENTRAR
-                </a>
-
-            </form>
-        </mat-card-content>
-
-        <mat-card-actions class="action-links">
-            <a mat-button color="accent">Esqueci minha senha</a>
-            <a mat-button color="basic" href="/registrar">Criar conta</a>
-        </mat-card-actions>
-    </mat-card>
+@if(loadingPage()) {
+<div class="loading-overlay">
+  <mat-spinner diameter="50"></mat-spinner>
 </div>
+} @else {
+<div class="login-container">
+  <mat-card class="login-card">
+    <mat-card-header>
+      <mat-card-title class="card-centralizado">
+        <img src="images/verao-maior.png" alt="Logo" class="login-logo" />
+      </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form class="login-form" [formGroup]="authForm" (ngSubmit)="submit($event)">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>E-mail</mat-label>
+          <input
+            matInput
+            type="email"
+            placeholder="seu.email@exemplo.com"
+            formControlName="email"
+            autocomplete="email"
+          />
+          <mat-icon matSuffix>email</mat-icon>
+
+          @if (authForm.controls.email.invalid && authForm.controls.email.touched) {
+          <mat-error>Informe um e-mail válido</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Senha</mat-label>
+          <input
+            matInput
+            [type]="hide() ? 'password' : 'text'"
+            formControlName="password"
+            autocomplete="current-password"
+          />
+          <button
+            type="button"
+            mat-icon-button
+            matSuffix
+            (click)="toggleHide($event)"
+            [attr.aria-label]="'Alternar visualização da senha'"
+            [attr.aria-pressed]="hide()"
+          >
+            <mat-icon>{{ hide() ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          class="full-width login-button"
+          [disabled]="authForm.invalid || isLoading()"
+        >
+          @if (isLoading()) {
+          <mat-spinner diameter="24"></mat-spinner>
+          } @else { ENTRAR }
+        </button>
+      </form>
+    </mat-card-content>
+
+    <mat-card-actions class="action-links">
+      <button mat-button color="accent" type="button">Esqueci minha senha</button>
+      <a mat-button color="basic" href="/registrar">Criar conta</a>
+    </mat-card-actions>
+  </mat-card>
+</div>
+}

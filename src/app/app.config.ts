@@ -8,9 +8,11 @@ import { AuthService } from './core/api/auth.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    provideClientHydration(),
     provideBrowserGlobalErrorListeners(),
-    provideRouter(routes), provideClientHydration(withEventReplay()),
+    provideRouter(routes),
+    provideClientHydration(withEventReplay()),
     provideHttpClient(withFetch()),
-    AuthService
-  ]
+    AuthService,
+  ],
 };

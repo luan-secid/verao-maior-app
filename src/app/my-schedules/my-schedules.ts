@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { afterNextRender, Component, OnInit } from '@angular/core';
 import { MaterialModule } from '../core/angular/material.module';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -8,21 +8,28 @@ import { User } from '../core/api/models/user.model';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ResourceService } from '../core/api/resource.service';
 import { Resource } from '../core/api/models/resource.model';
-import { DatePipe } from '@angular/common';
 import { debug } from 'console';
 
 @Component({
   selector: 'app-my-schedules',
-  imports: [MaterialModule, DatePipe],
-  providers: [AuthService, UserService, ResourceService, Router, MatSnackBar, RouterLink, RouterLinkActive],
+  imports: [MaterialModule],
+  providers: [
+    AuthService,
+    UserService,
+    ResourceService,
+    Router,
+    MatSnackBar,
+    RouterLink,
+    RouterLinkActive,
+  ],
   templateUrl: './my-schedules.html',
   styleUrl: './my-schedules.css',
 })
 export class MySchedules implements OnInit {
-  token: string = "";
-  user: User = new User;
+  token: string = '';
+  user: User = new User();
   resources: Resource[] = [];
-  resource: Resource = new Resource;
+  resource: Resource = new Resource();
 
   constructor(
     private _authService: AuthService,
@@ -30,9 +37,7 @@ export class MySchedules implements OnInit {
     private _resourceService: ResourceService,
     private _route: Router,
     private _snackBar: MatSnackBar
-  ) {
-
-  }
+  ) {}
 
   ngOnInit() {
     this.getUser();
@@ -41,29 +46,32 @@ export class MySchedules implements OnInit {
 
   getUser() {
     try {
-      this.user.name = localStorage.getItem('nome')!;
-      this.user.email = localStorage.getItem('email')!;
-      this.token = localStorage.getItem('access_token')!;
+      afterNextRender(() => {
+        this.user.name = localStorage.getItem('nome')!;
+        this.user.email = localStorage.getItem('email')!;
+        this.token = localStorage.getItem('access_token')!;
+      });
       this._userService.getUserByEmail(this.user.email).subscribe({
         next: (result: User) => {
           this.user = result;
           try {
             this.getSchedules();
           } catch (error) {
-            this._snackBar.open("Não foi possível validar suas informações.", "", { duration: 2000 });
+            this._snackBar.open('Não foi possível validar suas informações.', '', {
+              duration: 2000,
+            });
           }
-
         },
         error: (err: HttpErrorResponse) => {
-          this._snackBar.open("Não foi possível validar suas informações.", "", { duration: 2000 });
+          this._snackBar.open('Não foi possível validar suas informações.', '', { duration: 2000 });
         },
         complete: () => {
-          this.getSchedules()
-        }
-      })
+          this.getSchedules();
+        },
+      });
     } catch (error) {
       localStorage.clear();
-      this._route.navigateByUrl('entrar')
+      this._route.navigateByUrl('entrar');
     }
   }
 
@@ -73,12 +81,12 @@ export class MySchedules implements OnInit {
         this.resources = result;
       },
       error: (err: HttpErrorResponse) => {
-        this._snackBar.open("Não foi possível validar suas informações.", "", { duration: 2000 });
+        this._snackBar.open('Não foi possível validar suas informações.', '', { duration: 2000 });
       },
       complete: () => {
-        return this.resources
-      }
-    })
+        return this.resources;
+      },
+    });
   }
 
   getResource(id: string) {
@@ -88,47 +96,46 @@ export class MySchedules implements OnInit {
         console.log(this.resource);
       },
       error: (err: HttpErrorResponse) => {
-        this._snackBar.open("Não foi possível validar suas informações.", "", { duration: 2000 });
+        this._snackBar.open('Não foi possível validar suas informações.', '', { duration: 2000 });
       },
       complete: () => {
-        return this.resource
-      }
-    })
+        return this.resource;
+      },
+    });
   }
 
   deleteSchedule(event: Event) {
     const elemento = event.target as HTMLButtonElement;
     this.getResource(elemento.value);
-    console.debug()
+    console.debug();
     console.log(this.resource);
-    this.resource.userId = "";
-    this.resource.status = "DISPONÍVEL"
+    this.resource.userId = '';
+    this.resource.status = 'DISPONÍVEL';
     console.log(this.resource);
     this._resourceService.editResourceById(this.resource._id, this.resource).subscribe({
       next: (result) => {
-        this._snackBar.open("Horário cancelado com sucesso!", "", { duration: 2000 });
+        this._snackBar.open('Horário cancelado com sucesso!', '', { duration: 2000 });
         this.getUser();
       },
       error: (err: HttpErrorResponse) => {
-        this._snackBar.open("Não foi possível cancelar horário.", "", { duration: 2000 });
+        this._snackBar.open('Não foi possível cancelar horário.', '', { duration: 2000 });
       },
       complete: () => {
-        return this.resource
-      }
-    })
+        return this.resource;
+      },
+    });
   }
 
   userValidate() {
     if (!this.token) {
       console.log('Necessário realizar login.');
       localStorage.clear();
-      this._route.navigateByUrl('entrar')
+      this._route.navigateByUrl('entrar');
     }
   }
 
   logout() {
     localStorage.clear();
-    this._route.navigateByUrl('entrar')
+    this._route.navigateByUrl('entrar');
   }
-
 }

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { MaterialModule } from '../core/angular/material.module';
 import {
   FormBuilder,
@@ -27,12 +27,13 @@ import { response } from 'express';
 })
 export class Subscribe {
   subscribedUser: User = new User();
+  hide = signal(true);
   isLinear = true;
 
   subscribeForm = new FormGroup({
     name: new FormControl('', Validators.required),
     age: new FormControl(''),
-    birthday: new FormControl(''),
+    birthday: new FormControl(new Date()),
     password: new FormControl('', Validators.required),
     checkPassword: new FormControl('', Validators.required),
     email: new FormControl('', Validators.required),
@@ -71,8 +72,8 @@ export class Subscribe {
     this._cepService.getAddressByCep(zipcode).subscribe({
       next: (response: Zipcode) => {
         console.log(response);
-        // this.subscribeForm.controls.city.setValue(response.localidade);
-        // this.subscribeForm.controls.state.setValue(response.estado);
+        this.subscribeForm.controls.city.setValue(response.city.toUpperCase());
+        this.subscribeForm.controls.state.setValue(response.state.toUpperCase());
         this._snackBar.open('Sucesso!', 'Localidade encontrada.', { duration: 2000 });
       },
       error: (err: HttpErrorResponse) => {
@@ -83,9 +84,35 @@ export class Subscribe {
 
   onSubmit(): void {
     if (this.subscribeForm.valid) {
-      const { name, email, password } = this.subscribeForm.value;
+      this.subscribedUser.name = this.subscribeForm.controls.name.value!;
+      this.subscribedUser.birthday = this.subscribeForm.controls.birthday.value!;
+      this.subscribedUser.password = this.subscribeForm.controls.password.value!;
+      this.subscribedUser.email = this.subscribeForm.controls.email.value!;
+      this.subscribedUser.phoneNumber = this.subscribeForm.controls.phoneNumber.value!.toString();
+      this.subscribedUser.state = this.subscribeForm.controls.state.value!;
+      this.subscribedUser.type = 'user';
+      this.subscribedUser.city = this.subscribeForm.controls.city.value!;
+      this._userService.createAnUser(this.subscribedUser).subscribe({
+        next: (response: User) => {
+          console.log(response);
+          this._snackBar.open('Usuário criado com sucesso!', '', { duration: 2000 });
+          this._router.navigate(['/entrar']);
+        },
+        error: (err: HttpErrorResponse) => {
+          this._snackBar.open('Erro ao criar usuário: ' + err.error.error, '', { duration: 2000 });
+        },
+      });
     } else {
-      this.subscribeForm.markAllAsTouched();
+      this._snackBar.open('Formulário inválido. Verifique os dados.', '', { duration: 2000 });
     }
+  }
+
+  passwordValidation(): boolean {
+    return this.subscribeForm.controls.password.value === this.subscribeForm.controls.checkPassword.value;
+  }
+
+  toggleVisibility(event: MouseEvent) {
+    this.hide.update(value => !value);
+    event.stopPropagation();
   }
 }

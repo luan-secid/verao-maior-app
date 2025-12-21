@@ -1,88 +1,83 @@
-import { Component, OnInit } from '@angular/core';
-import { MaterialModule } from '../core/angular/material.module';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Auth } from '../core/api/models/auth.model';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { UserService } from '../core/api/user.service';
 import { HttpErrorResponse } from '@angular/common/http';
+
+import { MaterialModule } from '../core/angular/material.module';
 import { AuthService } from '../core/api/auth.service';
+import { UserService } from '../core/api/user.service';
+import { Auth } from '../core/api/models/auth.model';
 
 @Component({
   selector: 'app-login',
-  imports: [MaterialModule, FormsModule, ReactiveFormsModule],
+  standalone: true,
+  imports: [MaterialModule, ReactiveFormsModule],
   providers: [UserService, AuthService],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
 export class Login implements OnInit {
-  email = ''
-  password = ''
-  auth: Auth = new Auth()
-  hide = true
+  private authService = inject(AuthService);
+  private userService = inject(UserService);
+  private router = inject(Router);
+  private snackBar = inject(MatSnackBar);
+  private fb = inject(FormBuilder);
 
-  constructor(
-    private _authService: AuthService,
-    private _userService: UserService,
-    private _route: Router,
-    private _snackBar: MatSnackBar
-  ) { }
+  loadingPage = signal(false);
+  hide = signal(true);
+  isLoading = signal(false);
+
+  authForm = this.fb.nonNullable.group({
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', [Validators.required]],
+  });
 
   ngOnInit(): void {
-    this.userValidate()
+    this.isLoading.set(true);
+    this.checkSession();
+    this.isLoading.set(false);
   }
 
-  public authForm = new FormGroup ({
-    email: new FormControl('', Validators.email),
-    password: new FormControl('', Validators.required),
-  })
-
-  onSubmit() {
-
-    if (this.email && this.password) {
-      console.log('Dados de Login Submetidos:');
-      console.log('Email:', this.email);
-      console.log('Password:', this.password);
-
-    } else {
-      console.error('Por favor, preencha todos os campos.');
+  private checkSession() {
+    if (typeof window !== 'undefined') {
+      if (localStorage.getItem('access_token')) {
+        this.router.navigate(['/inicio']);
+      }
     }
   }
 
-  getUser(): Auth {
-      this.auth.email = this.authForm.controls.email.value!
-      this.auth.password = this.authForm.controls.password.value!
-      return this.auth
+  submit(event: MouseEvent) {
+    event.preventDefault();
+    if (this.authForm.invalid) return;
+    this.isLoading.set(true);
+    const loginData: Auth = this.authForm.getRawValue();
+
+    this.authService.userLoginPost(loginData).subscribe({
+      next: (response: any) => {
+        this.saveSession(response.access_token, response.payload);
+        window.location.reload();
+        this.router.navigate(['/inicio']).then(() => {
+          this.snackBar.open('Bem-vindo!', 'OK', { duration: 3000 });
+        });
+      },
+      error: (err: HttpErrorResponse) => {
+        this.isLoading.set(false);
+        const errorMsg = err.error?.error || 'Falha na conexão';
+        this.snackBar.open('Erro de login: ' + errorMsg, 'Fechar', { duration: 4000 });
+      },
+      complete: () => this.isLoading.set(false),
+    });
   }
 
-  userValidate() {
-    if (localStorage.getItem('access_token')) {
-      this._route.navigateByUrl('inicio');
-    }
-  }
-
-  setToken(access_token: string, payload: { sub: string, username: string }) {
-    localStorage.setItem('access_token', access_token);
+  private saveSession(token: string, payload: any) {
+    localStorage.setItem('access_token', token);
     localStorage.setItem('email', payload.sub);
     localStorage.setItem('nome', payload.username);
   }
 
-  submit() {
-    this.getUser();
-    console.log(true);
-    console.log(this.authForm.controls.email.value)
-    console.log(this.authForm.controls.password.value)
-    return this._authService.userLoginPost(this.auth).subscribe({
-      next: (response: any) => {
-       this.setToken(response.access_token, response.payload);
-       this._route.navigated
-       this.userValidate();
-       window.location.reload();
-      },
-      error: (err: HttpErrorResponse) => {
-        this._snackBar.open("Erro de login: " + err.error.error, '', { duration: 2000 });
-      },
-    });
+  toggleHide(event: MouseEvent) {
+    event.preventDefault();
+    this.hide.update((v) => !v);
   }
-
 }

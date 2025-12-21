@@ -31,7 +31,9 @@
                 />
               </mat-form-field>
               <div>
-                <button matButton="filled" matStepperNext>Próximo Passo</button>
+                <button matButton="filled" matStepperNext class="button-subscribe">
+                  Próximo Passo
+                </button>
               </div>
             </form>
           </mat-step>
@@ -54,28 +56,95 @@
                 <input type="date" matInput formControlName="birthday" required />
               </mat-form-field>
               <div>
-                <button matButton matStepperPrevious>Voltar</button>
-                <button matButton="filled" matStepperNext>Próximo Passo</button>
+                <button matButton matStepperPrevious class="button-subscribe">Voltar</button>
+                <button matButton="filled" matStepperNext class="button-subscribe">
+                  Próximo Passo
+                </button>
               </div>
             </form>
           </mat-step>
           <mat-step>
-            <mat-form-field appearance="outline" class="search-form-field">
+            <mat-form-field
+              appearance="outline"
+              class="search-form-field form-input"
+              style="margin-top: 15px"
+            >
               <mat-label>Pesquisar CEP</mat-label>
               <input matInput type="text" formControlName="zipcode" />
 
               <button mat-icon-button matSuffix (click)="getCity()" type="button">
                 <mat-icon>search</mat-icon>
               </button>
-
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="form-input" style="margin-top: 15px">
+              <mat-label>Cidade</mat-label>
+              <input matInput formControlName="city" required />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="form-input" style="margin-top: 15px">
+              <mat-label>Estado (UF)</mat-label>
+              <input
+                matInput
+                formControlName="state"
+                oninput="this.value = this.value.toUpperCase()"
+                required
+              />
             </mat-form-field>
             <div>
-              <button matButton matStepperPrevious>Back</button>
-              <button matButton (click)="stepper.reset()">Reset</button>
+              <button matButton matStepperPrevious class="button-subscribe">Voltar</button>
+              <button matButton="filled" matStepperNext class="button-subscribe">
+                Próximo Passo
+              </button>
+            </div>
+          </mat-step>
+
+          <mat-step>
+            <mat-form-field appearance="outline" class="form-input" style="margin-top: 15px">
+              <mat-label>Senha</mat-label>
+              <input
+                matInput
+                formControlName="password"
+                [type]="hide() ? 'password' : 'text'"
+                required
+              />
+              <button mat-icon-button matSuffix (click)="toggleVisibility($event)" type="button">
+                <mat-icon>{{ hide() ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="form-input" style="margin-top: 15px">
+              <mat-label>Digite novamente a senha</mat-label>
+              <input
+                matInput
+                formControlName="checkPassword"
+                [type]="hide() ? 'password' : 'text'"
+                required
+              />
+              <button mat-icon-button matSuffix (click)="toggleVisibility($event)" type="button">
+                <mat-icon>{{ hide() ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+            </mat-form-field>
+            <div>
+              <button matButton matStepperPrevious class="button-subscribe">Voltar</button>
+              <button
+                class="button-subscribe"
+                matButton="filled"
+                (click)="onSubmit()"
+                [disabled]="
+                  this.subscribeForm.controls.password.value !==
+                  this.subscribeForm.controls.checkPassword.value
+                "
+              >
+                Registrar
+              </button>
             </div>
           </mat-step>
         </mat-stepper>
       </form>
     </mat-card-content>
+    <mat-card-footer>
+      <a mat-flat-button color="primary" class="modern-login-button" href="/login">
+        <mat-icon>login</mat-icon>
+        <span>Já tenho conta</span>
+      </a>
+    </mat-card-footer>
   </mat-card>
 </div>

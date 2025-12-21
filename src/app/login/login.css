@@ -1,61 +1,51 @@
-/* Estilos básicos para centralizar e dimensionar o card */
-
-
 .login-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh; /* Ocupa a altura total da viewport */
-  background-color: #f0f2f5; /* Cor de fundo suave */
+  min-height: 100vh;
+  /* Impede que cliques rápidos selecionem textos ao redor do card */
+  user-select: none;
+  margin: 15px;
+  margin-top: -10px;
 }
 
 .login-card {
+  width: 100%;
   max-width: 400px;
-  width: 90%;
-  padding: 20px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  padding: 1rem;
 }
 
-.login-form {
-  display: flex;
-  flex-direction: column;
+.login-logo {
+  width: 50%;
+  display: block;
+  margin: 0 auto;
+  padding-bottom: 25px;
 }
 
 .full-width {
   width: 100%;
-}
-
-.login-card mat-card-header {
-  margin-bottom: 20px;
-  justify-content: center;
-}
-
-.login-card mat-card-title {
-  display: flex;
-  align-items: center;
-  font-size: 24px;
-}
-
-.login-card mat-card-title mat-icon {
-  margin-right: 10px;
+  margin-bottom: 1rem;
 }
 
 .login-button {
-  margin-top: 15px;
-  height: 45px;
-  font-weight: bold;
+  height: 48px;
+  margin-top: 1rem;
 }
 
-.action-links {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 10px;
+/* Garante que o spinner fique centralizado dentro do botão */
+mat-spinner {
+  margin: 0 auto;
 }
 
-.card-centralizado {
-  display: flex;
-  justify-content: center; /* Centraliza horizontalmente */
-  align-items: center;    /* Centraliza verticalmente */
-  height: 200px;          /* Defina uma altura para o card para ver a centralização vertical */
-  width: 300px;
+.login-container,
+.mat-mdc-button,
+.mat-mdc-raised-button {
+  -webkit-user-select: none;
+  /* Safari */
+  -moz-user-select: none;
+  /* Firefox */
+  -ms-user-select: none;
+  /* IE10+ */
+  user-select: none;
+  /* Padrão moderno */
 }
