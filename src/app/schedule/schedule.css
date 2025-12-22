@@ -213,6 +213,10 @@ h2 {
   transition: transform 0.3s ease;
 }
 
+.menu-icon {
+  color: #ffffff;
+}
+
 /* Card de Alerta (Moderno) */
 .alert-card {
   max-width: 600px;
@@ -230,7 +234,7 @@ h2 {
 .alert-content p {
   margin: 0;
   font-size: 0.9rem;
-  color: #666;
+  color: #ffffff;
 }
 
 /* Busca dentro do Mat-Select (Sticky) */
@@ -305,4 +309,9 @@ h2 {
   #logo img {
     width: 150px !important;
   }
+}
+
+.mat-mdc-card-header {
+  background-color: #1976d2 !important;
+  color: white !important
 }

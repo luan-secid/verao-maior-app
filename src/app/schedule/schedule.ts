@@ -19,14 +19,16 @@ interface Space {
 
 @Component({
   selector: 'app-schedule',
-  standalone: true, // Definido como standalone conforme padrão Angular 19
-  imports: [MaterialModule, MatSelectModule, DatePipe, FormsModule, ReactiveFormsModule],
-  providers: [
-    AuthService,
-    UserService,
-    ResourceService,
-    // Router e SnackBar não precisam estar nos providers aqui se já estiverem no app.config
+  standalone: true,
+  imports: [
+    MaterialModule,
+    MatSelectModule,
+    DatePipe,
+    FormsModule,
+    ReactiveFormsModule,
+    RouterLink,
   ],
+  providers: [AuthService, UserService, ResourceService],
   templateUrl: './schedule.html',
   styleUrl: './schedule.css',
 })
@@ -35,12 +37,12 @@ export class Schedule implements OnInit {
   isLoading = signal(false);
   searchTerm = signal('');
   resources = signal<Resource[]>([]);
-  resource = new Resource();
+  hasSchedule = signal(false);
 
   // --- Propriedades ---
   token: string = '';
-  hasSchedule = signal(false); // Transformado em signal para UX reativa
   user: User = new User();
+  resource: Resource = new Resource();
   private fb = inject(FormBuilder);
   private platformId = inject(PLATFORM_ID);
 
@@ -50,9 +52,9 @@ export class Schedule implements OnInit {
   ];
 
   scheduleForm = this.fb.group({
-    name: ['', [Validators.required, Validators.minLength(3)]],
-    email: ['', [Validators.required, Validators.email]],
-    phoneNumber: ['', [Validators.required, Validators.minLength(6)]],
+    name: [{ value: '', disabled: true }, [Validators.required]],
+    email: [{ value: '', disabled: true }, [Validators.required]],
+    phoneNumber: [{ value: '', disabled: true }, [Validators.required]],
     selectedSpace: ['', [Validators.required]],
     hour: ['', [Validators.required]],
   });
@@ -68,34 +70,27 @@ export class Schedule implements OnInit {
     this.isLoading.set(true);
     this.getUser();
     this.userValidate();
-    // O isLoading será desativado dentro do callback do getUser para melhor UX
   }
 
   getUser() {
-    try {
-      if (isPlatformBrowser(this.platformId)) {
-        this.user.name = localStorage.getItem('nome') || '';
-        this.user.email = localStorage.getItem('email') || '';
-        this.token = localStorage.getItem('access_token') || '';
+    if (isPlatformBrowser(this.platformId)) {
+      const email = localStorage.getItem('email');
+      this.token = localStorage.getItem('access_token') || '';
+
+      if (email) {
+        this._userService.getUserByEmail(email).subscribe({
+          next: (result) => {
+            this.user = result;
+            this.validateSchedule(); // Preenche o form
+            this.validateHasSchedule();
+            this.isLoading.set(false);
+          },
+          error: () => {
+            this._snackBar.open('Erro ao carregar perfil', 'Fechar', { duration: 3000 });
+            this.isLoading.set(false);
+          },
+        });
       }
-
-      if (!this.user.email) return;
-
-      this._userService.getUserByEmail(this.user.email).subscribe({
-        next: (result) => {
-          this.user = result;
-          this.validateHasSchedule();
-          this.isLoading.set(false);
-        },
-        error: (err: HttpErrorResponse) => {
-          this._snackBar.open('Erro ao buscar as informações do usuário', 'Fechar', {
-            duration: 3000,
-          });
-          this.isLoading.set(false);
-        },
-      });
-    } catch (error) {
-      this.logout();
     }
   }
 
@@ -111,17 +106,14 @@ export class Schedule implements OnInit {
 
     this._resourceService.getResourceByResource(event.value).subscribe({
       next: (result) => {
-        // CORREÇÃO: Limpa a lista antes de adicionar novos para evitar duplicidade na tela
         const availableItems = result
           .filter((el) => el.status === 'DISPONÍVEL')
           .map((el) => ({
             ...el,
-            // Tratamento do fuso horário que discutimos (Removendo o Z para ignorar "esperteza" do Angular)
             date: new Date(el.date.toString().replace('Z', '')),
           }));
 
         this.resources.set(availableItems);
-        this.validateSchedule();
         this.isLoading.set(false);
       },
       error: () => {
@@ -131,13 +123,11 @@ export class Schedule implements OnInit {
     });
   }
 
-  // Otimizado: Agora filtra pela string formatada da data para facilitar a busca do usuário
   scheduleFilter = computed(() => {
     const term = this.searchTerm().toLowerCase();
     const pipe = new DatePipe('pt-BR');
-
     return this.resources().filter((res) => {
-      const formattedDate = pipe.transform(res.date, 'dd/MM/yyyy HH:mm') || '';
+      const formattedDate = pipe.transform(res.date, 'dd/MM/yyyy HH:mm', 'UTC') || '';
       return formattedDate.toLowerCase().includes(term);
     });
   });
@@ -147,18 +137,10 @@ export class Schedule implements OnInit {
     this.searchTerm.set(value);
   }
 
-  validateDisponibility(event: MatSelectChange) {
-    this.scheduleForm.controls.hour.setValue(event.value);
-  }
-
   validateHasSchedule() {
     this._resourceService.getResourceByUserId(this.user._id).subscribe({
-      next: (result: Resource[]) => {
-        this.hasSchedule.set(result.length > 0);
-      },
-      error: () => {
-        console.error('Erro ao validar agendamentos existentes');
-      },
+      next: (result) => this.hasSchedule.set(result.length > 0),
+      error: () => console.error('Erro ao validar agendamentos'),
     });
   }
 
@@ -178,32 +160,59 @@ export class Schedule implements OnInit {
   }
 
   onSubmit() {
-    if (this.scheduleForm.invalid) {
-      this._snackBar.open('Por favor, selecione um horário.', '', { duration: 2000 });
-      return;
-    }
-    const _id = this.scheduleForm.value.hour?.toString() || '';
-    this._resourceService.getResourceById(_id, 'body', true).subscribe({
-      next: (res) => {
-        this.resource = res;
-        this.resource.status = 'INDISPONÍVEL';
-        this.resource.userId = this.user._id;
+    if (this.scheduleForm.invalid) return;
 
-        this._resourceService.editResourceById(this.resource._id || '', this.resource).subscribe({
+    const resourceId = this.scheduleForm.controls.hour.value!;
+    this.isLoading.set(true);
+
+    this._resourceService.getResourceById(resourceId).subscribe({
+      next: (res) => {
+        const updatedResource = {
+          ...res,
+          status: 'INDISPONÍVEL' as const,
+          userId: this.user._id,
+        };
+
+        this._resourceService.editResourceById(resourceId, updatedResource).subscribe({
           next: () => {
             this._snackBar.open('Agendamento realizado com sucesso!', '', { duration: 3000 });
             this.hasSchedule.set(true);
-            this.resources.set(this.resources().filter((r) => r._id !== this.resource._id));
+            this.isLoading.set(false);
           },
           error: () => {
-            this._snackBar.open('Erro ao confirmar agendamento.', '', { duration: 3000 });
+            this._snackBar.open('Erro ao confirmar.', '', { duration: 3000 });
+            this.isLoading.set(false);
           },
         });
       },
-      error: () => {
-        this._snackBar.open('Erro ao processar agendamento.', '', { duration: 3000 });
-      },
+      error: () => this.isLoading.set(false),
     });
-    console.log('Dados para agendamento:', this.scheduleForm.value);
+  }
+
+  // Mantendo suas funções auxiliares originais
+  getUserInfo() {
+    this._userService.getUserByEmail(this.user.email).subscribe({
+      next: (result) => (this.user = result),
+      error: () => this._snackBar.open('Erro ao buscar info do usuário'),
+    });
+  }
+
+  getScheduleInfo(): Promise<any> {
+    return new Promise((resolve) => {
+      this._resourceService.getResourceById(this.scheduleForm.controls.hour.value!).subscribe({
+        next: (res) => resolve(res.date),
+        error: () => resolve(new Date()),
+      });
+    });
+  }
+
+  async registerSchedule() {
+    const date = await this.getScheduleInfo();
+    const resource = new Resource();
+    resource.resource = this.scheduleForm.controls.selectedSpace.value!;
+    resource.date = date;
+    resource.status = 'INDISPONÍVEL';
+    resource.userId = this.user._id;
+    console.log('Novo Agendamento:', resource);
   }
 }
