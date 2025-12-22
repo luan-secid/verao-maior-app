@@ -9,6 +9,7 @@ import { AuthService } from '../core/api/auth.service';
 import { UserService } from '../core/api/user.service';
 import { Auth } from '../core/api/models/auth.model';
 import { isPlatformBrowser } from '@angular/common';
+import packageInfo from './../../../package.json';
 
 @Component({
   selector: 'app-login',
@@ -24,6 +25,7 @@ export class Login implements OnInit {
   private router = inject(Router);
   private snackBar = inject(MatSnackBar);
   private fb = inject(FormBuilder);
+  protected appVersion: string = packageInfo.version;
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
 
