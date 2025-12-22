@@ -9,7 +9,6 @@ import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angu
 import { MatSelectChange, MatSelectModule } from '@angular/material/select';
 import { ResourceService } from '../core/api/resource.service';
 import { Resource } from '../core/api/models/resource.model';
-import { HttpErrorResponse } from '@angular/common/http';
 import { DatePipe, isPlatformBrowser } from '@angular/common';
 
 interface Space {
@@ -20,14 +19,7 @@ interface Space {
 @Component({
   selector: 'app-schedule',
   standalone: true,
-  imports: [
-    MaterialModule,
-    MatSelectModule,
-    DatePipe,
-    FormsModule,
-    ReactiveFormsModule,
-    RouterLink,
-  ],
+  imports: [MaterialModule, MatSelectModule, DatePipe, FormsModule, ReactiveFormsModule],
   providers: [AuthService, UserService, ResourceService],
   templateUrl: './schedule.html',
   styleUrl: './schedule.css',
