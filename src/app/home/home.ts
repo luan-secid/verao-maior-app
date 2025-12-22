@@ -62,7 +62,7 @@ export class Home implements OnInit, OnDestroy {
         this.user.name = localStorage.getItem('nome')!;
         this.user.email = localStorage.getItem('email')!;
         this.token = localStorage.getItem('access_token')!;
-      };
+      }
     } catch (error) {
       localStorage.clear();
       this._route.navigateByUrl('entrar');
@@ -83,16 +83,19 @@ export class Home implements OnInit, OnDestroy {
   }
 
   userValidate() {
-    if (!this.token) {
-      console.log('Necessário realizar login.');
-      localStorage.clear();
-      this._route.navigateByUrl('entrar');
+    if (isPlatformBrowser(this.platformId)) {
+      if (!this.token) {
+        localStorage.clear();
+        this._route.navigateByUrl('entrar');
+      }
     }
   }
 
   logout() {
-    localStorage.clear();
-    this._route.navigateByUrl('entrar');
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.clear();
+      this._route.navigateByUrl('entrar');
+    }
   }
 
   ngOnDestroy() {
