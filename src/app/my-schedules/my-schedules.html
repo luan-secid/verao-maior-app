@@ -111,11 +111,19 @@
       </mat-card-content>
     </mat-card>
     } @empty {
-    <div class="empty-state">
-      <mat-icon>event_busy</mat-icon>
-      <p>Você não possui agendamentos ativos no momento.</p>
-      <a mat-raised-button color="accent" routerLink="/agendar">AGENDAR AGORA</a>
-    </div>
+    <mat-card class="alert-info">
+      <mat-card-content class="alert-container">
+        <div class="alert-message">
+          <mat-icon color="primary">info</mat-icon>
+          <p>Você não possui agendamentos ativos no momento.</p>
+        </div>
+
+        <a mat-flat-button color="primary" href="/agendar">
+          <mat-icon>add_circle</mat-icon>
+          AGENDAR AGORA
+        </a>
+      </mat-card-content>
+    </mat-card>
     }
   </div>
 </div>

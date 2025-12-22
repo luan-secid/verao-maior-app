@@ -1,9 +1,3 @@
-@if (isLoading()) {
-<div class="loading-spinner">
-  <mat-spinner></mat-spinner>
-  <p>Carregando informações...</p>
-</div>
-} @else {
 <mat-toolbar class="menu">
   <button mat-icon-button [matMenuTriggerFor]="menu">
     <mat-icon class="menu-icon">menu</mat-icon>
@@ -37,6 +31,7 @@
   <span id="logo">
     <img src="images/verao-maior-menu.png" style="width: 220px" alt="Logo Verão Maior" />
   </span>
+
   <span class="example-spacer"></span>
 
   <button mat-icon-button [matMenuTriggerFor]="userMenu">
@@ -56,43 +51,62 @@
 </mat-toolbar>
 
 <mat-toolbar color="primary">
-  <span>Agendar Horário</span>
+  <span>Agendar um horário</span>
 </mat-toolbar>
 
 <div class="form-container">
-  @if (!hasSchedule()) {
-  <h2>Escolha seu horário:</h2>
-
+  <br />
   <form [formGroup]="scheduleForm" (ngSubmit)="onSubmit()">
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Nome de Usuário</mat-label>
-      <input matInput formControlName="name" readonly />
+      <input matInput formControlName="name" />
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>E-mail</mat-label>
-      <input matInput formControlName="email" readonly />
+      <input matInput formControlName="email" />
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Espaço Desejado</mat-label>
       <mat-select formControlName="selectedSpace" (selectionChange)="getResources($event)">
-        <mat-option [value]="null">-- SELECIONE --</mat-option>
+        <mat-option [value]="null">-- SELECIONE O EVENTO --</mat-option>
         @for (space of spaces; track space.value) {
-          <mat-option [value]="space.value">{{ space.viewValue }}</mat-option>
+        <mat-option [value]="space.value">{{ space.viewValue }}</mat-option>
         }
       </mat-select>
     </mat-form-field>
 
+    @if (scheduleForm.controls.selectedSpace.value) { @if (isCurrentSpaceBooked()) {
+    <div class="alert-info">
+      <mat-icon>info</mat-icon>
+      <p>
+        Você já possui um agendamento ativo para
+        <strong>{{ scheduleForm.controls.selectedSpace.value }}</strong
+        >.
+      </p>
+    </div>
+    <div class="navigation-wrapper">
+      <a
+        mat-flat-button
+        color="primary"
+        class="btn-schedule-history"
+        href="/meus-agendamentos"
+      >
+        <mat-icon>calendar_month</mat-icon>
+        <span>VER MEUS AGENDAMENTOS</span>
+      </a>
+    </div>
+    } @else {
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Disponibilidade de Data e Hora</mat-label>
+      <mat-label>Horários Disponíveis</mat-label>
       <mat-select formControlName="hour">
         <div class="search-container">
           <mat-form-field appearance="fill" class="search-field">
             <mat-icon matPrefix>search</mat-icon>
             <input
               matInput
-              placeholder="Ex: 22/12..."
+              placeholder="Pesquisar data/hora..."
               (input)="updateSearch($event)"
               (keydown)="$event.stopPropagation()"
             />
@@ -100,40 +114,27 @@
         </div>
 
         @for (schedule of scheduleFilter(); track schedule._id) {
-          <mat-option [value]="schedule._id">
-            {{ schedule.date | date : 'dd/MM/yyyy HH:mm' }}
-          </mat-option>
+        <mat-option [value]="schedule._id">
+          {{ schedule.date | date : 'dd/MM/yyyy HH:mm' : 'UTC' }}
+        </mat-option>
         } @empty {
-          <mat-option disabled>Nenhum horário disponível para este espaço.</mat-option>
+        <mat-option disabled>Nenhum horário livre encontrado.</mat-option>
         }
       </mat-select>
     </mat-form-field>
 
     <div class="actions">
       <button
-        mat-raised-button
+        mat-flat-button
         color="primary"
         type="submit"
         class="btn-submit"
-        [disabled]="scheduleForm.invalid || isLoading()"
+        [disabled]="scheduleForm.invalid || isLoading() || isCurrentSpaceBooked()"
       >
-        @if (isLoading()) {
-          <mat-spinner diameter="20" style="margin-right: 8px;"></mat-spinner>
-          Processando...
-        } @else {
-          <ng-container>
-            <mat-icon>check_circle</mat-icon>
-            Confirmar Agendamento
-          </ng-container>
-        }
+        <mat-icon>calendar_today</mat-icon>
+        CONFIRMAR AGENDAMENTO
       </button>
     </div>
+    } }
   </form>
-  } @else {
-    <div class="has-schedule-msg">
-      <mat-icon color="primary">info</mat-icon>
-      <p>Agendamento efetuado com sucesso, acompanhe no menu "meus agendamentos".</p>
-    </div>
-  }
 </div>
-}

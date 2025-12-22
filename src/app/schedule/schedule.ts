@@ -1,6 +1,6 @@
-import { Component, computed, Inject, inject, PLATFORM_ID, signal, OnInit } from '@angular/core';
+import { Component, computed, inject, PLATFORM_ID, signal, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { Router } from '@angular/router';
 import { MaterialModule } from '../core/angular/material.module';
 import { AuthService } from '../core/api/auth.service';
 import { UserService } from '../core/api/user.service';
@@ -29,12 +29,19 @@ export class Schedule implements OnInit {
   isLoading = signal(false);
   searchTerm = signal('');
   resources = signal<Resource[]>([]);
-  hasSchedule = signal(false);
+
+  // Armazena os nomes dos recursos que o usuário já agendou (ex: ['MEU CAMPINHO'])
+  userSchedules = signal<string[]>([]);
+
+  // Verifica se o espaço selecionado no Select já foi agendado pelo usuário
+  isCurrentSpaceBooked = computed(() => {
+    const selected = this.scheduleForm.get('selectedSpace')?.value;
+    return this.userSchedules().includes(selected || '');
+  });
 
   // --- Propriedades ---
   token: string = '';
   user: User = new User();
-  resource: Resource = new Resource();
   private fb = inject(FormBuilder);
   private platformId = inject(PLATFORM_ID);
 
@@ -73,8 +80,8 @@ export class Schedule implements OnInit {
         this._userService.getUserByEmail(email).subscribe({
           next: (result) => {
             this.user = result;
-            this.validateSchedule(); // Preenche o form
-            this.validateHasSchedule();
+            this.validateSchedule();
+            this.validateHasSchedule(); // Busca agendamentos existentes
             this.isLoading.set(false);
           },
           error: () => {
@@ -95,6 +102,7 @@ export class Schedule implements OnInit {
   getResources(event: MatSelectChange) {
     this.isLoading.set(true);
     this.scheduleForm.controls.selectedSpace.setValue(event.value);
+    this.scheduleForm.controls.hour.reset(); // Limpa seleção anterior de hora
 
     this._resourceService.getResourceByResource(event.value).subscribe({
       next: (result) => {
@@ -131,7 +139,11 @@ export class Schedule implements OnInit {
 
   validateHasSchedule() {
     this._resourceService.getResourceByUserId(this.user._id).subscribe({
-      next: (result) => this.hasSchedule.set(result.length > 0),
+      next: (result) => {
+        // Mapeia apenas os nomes dos recursos que o usuário já tem reserva
+        const bookedNames = result.map(res => res.resource);
+        this.userSchedules.set(bookedNames);
+      },
       error: () => console.error('Erro ao validar agendamentos'),
     });
   }
@@ -152,9 +164,10 @@ export class Schedule implements OnInit {
   }
 
   onSubmit() {
-    if (this.scheduleForm.invalid) return;
+    if (this.scheduleForm.invalid || this.isCurrentSpaceBooked()) return;
 
     const resourceId = this.scheduleForm.controls.hour.value!;
+    const spaceName = this.scheduleForm.controls.selectedSpace.value!;
     this.isLoading.set(true);
 
     this._resourceService.getResourceById(resourceId).subscribe({
@@ -168,8 +181,12 @@ export class Schedule implements OnInit {
         this._resourceService.editResourceById(resourceId, updatedResource).subscribe({
           next: () => {
             this._snackBar.open('Agendamento realizado com sucesso!', '', { duration: 3000 });
-            this.hasSchedule.set(true);
+
+            // Adiciona o nome do recurso agendado à lista de bloqueio do usuário
+            this.userSchedules.update(prev => [...prev, spaceName]);
+
             this.isLoading.set(false);
+            this.scheduleForm.controls.hour.reset();
           },
           error: () => {
             this._snackBar.open('Erro ao confirmar.', '', { duration: 3000 });
@@ -181,7 +198,7 @@ export class Schedule implements OnInit {
     });
   }
 
-  // Mantendo suas funções auxiliares originais
+  // Funções auxiliares mantidas
   getUserInfo() {
     this._userService.getUserByEmail(this.user.email).subscribe({
       next: (result) => (this.user = result),
@@ -191,7 +208,9 @@ export class Schedule implements OnInit {
 
   getScheduleInfo(): Promise<any> {
     return new Promise((resolve) => {
-      this._resourceService.getResourceById(this.scheduleForm.controls.hour.value!).subscribe({
+      const id = this.scheduleForm.controls.hour.value;
+      if (!id) return resolve(new Date());
+      this._resourceService.getResourceById(id).subscribe({
         next: (res) => resolve(res.date),
         error: () => resolve(new Date()),
       });
@@ -205,6 +224,5 @@ export class Schedule implements OnInit {
     resource.date = date;
     resource.status = 'INDISPONÍVEL';
     resource.userId = this.user._id;
-    console.log('Novo Agendamento:', resource);
   }
 }
