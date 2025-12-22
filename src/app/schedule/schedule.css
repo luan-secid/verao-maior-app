@@ -1,115 +1,115 @@
 .example-spacer {
-    flex: 1 1 auto;
+  flex: 1 1 auto;
 }
 
 .menu {
-    background-color: #00a1e9;
-    height: 100px;
+  background-color: #00a1e9;
+  height: 100px;
 }
 
 .example-icon {
-    color: #fff;
+  color: #fff;
 }
 
 #logo {
-    width: 100% !important;
-    display: flex !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-    flex-direction: column !important;
+  width: 100% !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  flex-direction: column !important;
 }
 
 .example-card {
-    max-width: 400px;
-    margin: 15px;
+  max-width: 400px;
+  margin: 15px;
 }
 
 .example-header-image {
-    background-image: url('./../../../public/images/secid-azul.png');
-    background-size: cover;
+  background-image: url('./../../../public/images/secid-azul.png');
+  background-size: cover;
 }
 
 .carousel-container {
-    padding: 15px;
+  padding: 15px;
+  position: relative;
+  max-width: 800px;
+  margin: 20px auto;
+  overflow: hidden;
+
+  .carousel-content {
     position: relative;
-    max-width: 800px;
-    margin: 20px auto;
-    overflow: hidden;
+    height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-    .carousel-content {
-        position: relative;
-        height: 400px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+    .slide {
+      display: none;
+      width: 100%;
+      height: 100%;
 
-        .slide {
-            display: none;
-            width: 100%;
-            height: 100%;
+      &.active {
+        display: block;
+        animation: fadeIn 0.5s ease-in-out;
+      }
 
-            &.active {
-                display: block;
-                animation: fadeIn 0.5s ease-in-out;
-            }
-
-            img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-            }
-        }
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
     }
+  }
 
-    .prev,
-    .next {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        background: rgba(0, 0, 0, 0.3);
-        color: white;
+  .prev,
+  .next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.3);
+    color: white;
+  }
+
+  .prev {
+    left: 10px;
+  }
+
+  .next {
+    right: 10px;
+  }
+
+  .indicators {
+    text-align: center;
+    padding: 10px;
+
+    .dot {
+      height: 10px;
+      width: 10px;
+      margin: 0 5px;
+      background-color: #bbb;
+      border-radius: 50%;
+      display: inline-block;
+      cursor: pointer;
+
+      &.active {
+        background-color: #3f51b5;
+      }
     }
-
-    .prev {
-        left: 10px;
-    }
-
-    .next {
-        right: 10px;
-    }
-
-    .indicators {
-        text-align: center;
-        padding: 10px;
-
-        .dot {
-            height: 10px;
-            width: 10px;
-            margin: 0 5px;
-            background-color: #bbb;
-            border-radius: 50%;
-            display: inline-block;
-            cursor: pointer;
-
-            &.active {
-                background-color: #3f51b5;
-            }
-        }
-    }
+  }
 }
 
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
+  from {
+    opacity: 0;
+  }
 
-    to {
-        opacity: 1;
-    }
+  to {
+    opacity: 1;
+  }
 }
 
 .schedule-button {
-    width: 100% !important;
+  width: 100% !important;
 }
 
 .form-container {
@@ -128,8 +128,10 @@
 
 .alert-card {
   margin: 1rem 0;
-  border-left: 5px solid #ffab00; /* Cor de destaque (Warning) */
-  background-color: #fffef0; /* Fundo suave */
+  border-left: 5px solid #ffab00;
+  /* Cor de destaque (Warning) */
+  background-color: #fffef0;
+  /* Fundo suave */
 }
 
 .alert-container {
@@ -159,4 +161,148 @@
 .alert-content p {
   margin: 0;
   color: #555;
+}
+
+.search-container {
+  padding: 8px 16px;
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 100;
+  border-bottom: 1px solid #eee;
+}
+
+.search-field {
+  width: 100%;
+}
+
+/* Remove as margens extras do material dentro do select */
+::v-deep .search-field .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+.full-width {
+  width: 100%;
+}
+
+/* Container Principal */
+.form-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+h2 {
+  color: #333;
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+/* Toolbar e Menu */
+.example-spacer {
+  flex: 1 1 auto;
+}
+
+#logo img {
+  vertical-align: middle;
+  transition: transform 0.3s ease;
+}
+
+/* Card de Alerta (Moderno) */
+.alert-card {
+  max-width: 600px;
+  margin: 1rem auto;
+  border-left: 5px solid #ff9800;
+  background-color: #fff9f0;
+}
+
+.alert-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.alert-content p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+/* Busca dentro do Mat-Select (Sticky) */
+.search-container {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: white;
+  padding: 8px 16px 0 16px;
+  border-bottom: 1px solid #eee;
+}
+
+.search-field {
+  width: 100%;
+}
+
+/* Ajuste para remover o espaçamento inferior interno do form-field da busca */
+::v-deep .search-field .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+/* Botão de Agendamento */
+.actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-submit {
+  padding: 1.5rem 2rem !important;
+  font-size: 1rem !important;
+  border-radius: 8px !important;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-submit mat-icon {
+  margin-right: 8px;
+}
+
+/* Spinner Centralizado */
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+}
+
+/* Feedback caso já tenha agendamento */
+.has-schedule-msg {
+  text-align: center;
+  padding: 3rem;
+  background: #e3f2fd;
+  border-radius: 12px;
+  color: #1976d2;
+}
+
+.has-schedule-msg mat-icon {
+  font-size: 48px;
+  height: 48px;
+  width: 48px;
+  margin-bottom: 10px;
+}
+
+/* Responsividade */
+@media (max-width: 600px) {
+  .form-container {
+    margin: 1rem auto;
+  }
+
+  #logo img {
+    width: 150px !important;
+  }
 }

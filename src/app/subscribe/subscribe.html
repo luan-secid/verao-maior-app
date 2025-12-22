@@ -1,150 +1,152 @@
-<div class="login-container">
-  <mat-card class="login-card">
-    <mat-card-header>
-      <mat-card-title class="card-centralizado">
-        <img src="images/verao-maior.png" style="width: 50%; text-align: center" />
-      </mat-card-title>
-    </mat-card-header>
+<div class="page-wrapper">
+  <div class="glass-card">
+    <header class="form-header">
+      <img src="images/verao-maior.png" alt="Logo" class="logo" ngSrcset="1x, 2x"/>
+      <h1>Crie sua conta</h1>
+      <p>Preencha os dados abaixo para começar</p>
+    </header>
 
-    <mat-card-content>
-      <form class="login-form" [formGroup]="subscribeForm" (ngSubmit)="onSubmit()">
-        <mat-stepper #stepper>
-          <mat-step [stepControl]="subscribeForm">
-            <form [formGroup]="subscribeForm">
-              <mat-form-field appearance="outline" class="form-input" style="margin-top: 15px">
-                <mat-label>Nome Completo</mat-label>
-                <input
-                  matInput
-                  formControlName="name"
-                  oninput="this.value = this.value.toUpperCase()"
-                  required
-                />
-              </mat-form-field>
-              <mat-form-field class="form-input" appearance="outline">
-                <mat-label>E-mail</mat-label>
-                <input
-                  matInput
-                  type="email"
-                  formControlName="email"
-                  oninput="this.value = this.value.toLowerCase()"
-                  required
-                />
-              </mat-form-field>
-              <div>
-                <button matButton="filled" matStepperNext class="button-subscribe">
-                  Próximo Passo
-                </button>
-              </div>
-            </form>
-          </mat-step>
-          <mat-step [stepControl]="subscribeForm">
-            <form [formGroup]="subscribeForm">
-              <mat-form-field class="form-input" appearance="outline" style="margin-top: 15px">
-                <mat-label>Contato (WhatsApp)</mat-label>
-                <input
-                  type="number"
-                  matInput
-                  placeholder="apenas números"
-                  formControlName="phoneNumber"
-                  maxlength="11"
-                  minlength="11"
-                  required
-                />
-              </mat-form-field>
-              <mat-form-field class="form-input" appearance="outline">
-                <mat-label>Nascimento</mat-label>
-                <input type="date" matInput formControlName="birthday" required />
-              </mat-form-field>
-              <div>
-                <button matButton matStepperPrevious class="button-subscribe">Voltar</button>
-                <button matButton="filled" matStepperNext class="button-subscribe">
-                  Próximo Passo
-                </button>
-              </div>
-            </form>
-          </mat-step>
-          <mat-step>
-            <mat-form-field
-              appearance="outline"
-              class="search-form-field form-input"
-              style="margin-top: 15px"
+    <mat-stepper #stepper linear="true" class="custom-stepper">
+      <mat-step [stepControl]="personalGroup">
+        <form [formGroup]="personalGroup" class="step-content">
+          <mat-form-field appearance="outline">
+            <mat-label>Nome Completo</mat-label>
+            <input
+              matInput
+              formControlName="name"
+              placeholder="Ex: João Silva"
+              oninput="this.value = this.value.toUpperCase()"
+            />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>E-mail</mat-label>
+            <input
+              matInput
+              type="email"
+              formControlName="email"
+              placeholder="joao@exemplo.com"
+              oninput="this.value = this.value.toLowerCase()"
+            />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Contato (Whatsapp)</mat-label>
+            <input matInput type="tel" formControlName="phoneNumber" placeholder="4199999999" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Data de Nascimento</mat-label>
+            <input matInput type="date" formControlName="birthday" />
+          </mat-form-field>
+
+          <div class="step-actions">
+            <button mat-flat-button color="primary" matStepperNext type="button">Continuar</button>
+          </div>
+        </form>
+      </mat-step>
+
+      <mat-step [stepControl]="addressGroup">
+        <form [formGroup]="addressGroup" class="step-content">
+          <mat-form-field appearance="outline">
+            <mat-label>Buscar meu endereço</mat-label>
+            <input matInput formControlName="zipcode" />
+            <button
+              mat-icon-button
+              matSuffix
+              type="button"
+              class="search-button"
+              (click)="getZipcode()"
             >
-              <mat-label>Pesquisar CEP</mat-label>
-              <input matInput type="text" formControlName="zipcode" />
+              <mat-icon>search</mat-icon>
+            </button>
+          </mat-form-field>
 
-              <button mat-icon-button matSuffix (click)="getCity()" type="button">
-                <mat-icon>search</mat-icon>
-              </button>
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="form-input" style="margin-top: 15px">
+          <div class="grid-row">
+            <mat-form-field appearance="outline">
               <mat-label>Cidade</mat-label>
-              <input matInput formControlName="city" required />
+              <input matInput formControlName="city" />
             </mat-form-field>
-            <mat-form-field appearance="outline" class="form-input" style="margin-top: 15px">
-              <mat-label>Estado (UF)</mat-label>
-              <input
-                matInput
-                formControlName="state"
-                oninput="this.value = this.value.toUpperCase()"
-                required
-              />
+            <mat-form-field appearance="outline" class="small-field">
+              <mat-label>UF</mat-label>
+              <input matInput formControlName="state" maxlength="2" />
             </mat-form-field>
-            <div>
-              <button matButton matStepperPrevious class="button-subscribe">Voltar</button>
-              <button matButton="filled" matStepperNext class="button-subscribe">
-                Próximo Passo
-              </button>
-            </div>
-          </mat-step>
+          </div>
 
-          <mat-step>
-            <mat-form-field appearance="outline" class="form-input" style="margin-top: 15px">
-              <mat-label>Senha</mat-label>
-              <input
-                matInput
-                formControlName="password"
-                [type]="hide() ? 'password' : 'text'"
-                required
-              />
-              <button mat-icon-button matSuffix (click)="toggleVisibility($event)" type="button">
-                <mat-icon>{{ hide() ? 'visibility_off' : 'visibility' }}</mat-icon>
-              </button>
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="form-input" style="margin-top: 15px">
-              <mat-label>Digite novamente a senha</mat-label>
-              <input
-                matInput
-                formControlName="checkPassword"
-                [type]="hide() ? 'password' : 'text'"
-                required
-              />
-              <button mat-icon-button matSuffix (click)="toggleVisibility($event)" type="button">
-                <mat-icon>{{ hide() ? 'visibility_off' : 'visibility' }}</mat-icon>
-              </button>
-            </mat-form-field>
-            <div>
-              <button matButton matStepperPrevious class="button-subscribe">Voltar</button>
-              <button
-                class="button-subscribe"
-                matButton="filled"
-                (click)="onSubmit()"
-                [disabled]="
-                  this.subscribeForm.controls.password.value !==
-                  this.subscribeForm.controls.checkPassword.value
-                "
-              >
-                Registrar
-              </button>
+          <div class="step-actions">
+            <button mat-button matStepperPrevious type="button">Voltar</button>
+            <button mat-flat-button color="primary" matStepperNext type="button">Continuar</button>
+          </div>
+        </form>
+      </mat-step>
+
+      <mat-step [stepControl]="securityGroup">
+        <form [formGroup]="securityGroup" class="step-content">
+          <mat-form-field appearance="outline">
+            <mat-label>Senha</mat-label>
+            <input
+              matInput
+              [type]="hidePassword() ? 'password' : 'text'"
+              formControlName="password"
+            />
+            <button
+              mat-icon-button
+              matSuffix
+              (click)="hidePassword.set(!hidePassword())"
+              type="button"
+            >
+              <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Confirme a senha</mat-label>
+            <input
+              matInput
+              [type]="hidePassword() ? 'password' : 'text'"
+              formControlName="confirmPassword"
+            />
+            <button
+              mat-icon-button
+              matSuffix
+              (click)="hidePassword.set(!hidePassword())"
+              type="button"
+            >
+              <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+          </mat-form-field>
+
+          @if (subscribeForm.get('security')?.get('password')?.value !=
+          subscribeForm.get('security')?.get('confirmPassword')?.value) {
+          <div class="alert-box warning">
+            <div class="alert-icon">
+              <mat-icon>warning</mat-icon>
             </div>
-          </mat-step>
-        </mat-stepper>
-      </form>
-    </mat-card-content>
-    <mat-card-footer>
-      <a mat-flat-button color="primary" class="modern-login-button" href="/login">
-        <mat-icon>login</mat-icon>
-        <span>Já tenho conta</span>
-      </a>
-    </mat-card-footer>
-  </mat-card>
+            <div class="alert-content">
+              <div class="alert-title">Atenção!</div>
+              <div class="alert-description">
+                A senha e a confirmação de senha estão diferentes. Verifique e tente novamente.
+              </div>
+            </div>
+          </div>
+          }
+
+          <div class="step-actions">
+            <button mat-button matStepperPrevious type="button">Voltar</button>
+            <button
+              mat-raised-button
+              color="accent"
+              (click)="onSubmit()"
+              [disabled]="subscribeForm.invalid"
+            >
+              Finalizar Cadastro
+            </button>
+          </div>
+        </form>
+      </mat-step>
+    </mat-stepper>
+
+    <footer class="form-footer">
+      <a href="/entrar">Já possui uma conta? Entrar</a>
+    </footer>
+  </div>
 </div>

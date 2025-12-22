@@ -1,118 +1,107 @@
-import { Component, signal } from '@angular/core';
-import { MaterialModule } from '../core/angular/material.module';
-import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { Component, signal, viewChild, inject } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatStepper, MatStepperModule } from '@angular/material/stepper';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { CepService } from '../core/api/cep.service';
+import { UserService } from '../core/api/user.service';
 import { User } from '../core/api/models/user.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { AuthService } from '../core/api/auth.service';
-import { UserService } from '../core/api/user.service';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
-import { CepService } from '../core/api/cep.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Zipcode } from '../core/api/models/zipcode.model';
-import { response } from 'express';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-subscribe',
-  imports: [MaterialModule, FormsModule, ReactiveFormsModule],
-  providers: [UserService, AuthService, CepService, RouterLink, RouterOutlet],
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatStepperModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+  ],
+  providers: [CepService, UserService],
   templateUrl: './subscribe.html',
   styleUrl: './subscribe.css',
 })
 export class Subscribe {
-  subscribedUser: User = new User();
-  hide = signal(true);
-  isLinear = true;
+  hidePassword = signal(true);
+  stepper = viewChild.required(MatStepper);
+  protected user = new User();
+  private snackBarService = inject(MatSnackBar);
+  private router = inject(Router);
+  private _cepService = inject(CepService);
+  private _userService = inject(UserService);
 
+  // Organizado por sub-grupos para facilitar a validação de cada passo
   subscribeForm = new FormGroup({
-    name: new FormControl('', Validators.required),
-    age: new FormControl(''),
-    birthday: new FormControl(new Date()),
-    password: new FormControl('', Validators.required),
-    checkPassword: new FormControl('', Validators.required),
-    email: new FormControl('', Validators.required),
-    phoneNumber: new FormControl('', Validators.required),
-    zipcode: new FormControl('', Validators.required),
-    state: new FormControl('', Validators.required),
-    city: new FormControl('', Validators.required),
+    personal: new FormGroup({
+      name: new FormControl('', Validators.required),
+      email: new FormControl('', [Validators.required, Validators.email]),
+      phoneNumber: new FormControl('', Validators.required),
+      birthday: new FormControl('', Validators.required),
+    }),
+    address: new FormGroup({
+      zipcode: new FormControl('', Validators.required),
+      city: new FormControl('', Validators.required),
+      state: new FormControl('', Validators.required),
+    }),
+    security: new FormGroup({
+      password: new FormControl('', Validators.required),
+      confirmPassword: new FormControl('', Validators.required),
+    }),
   });
 
-  constructor(
-    protected _authService: AuthService,
-    protected _userService: UserService,
-    protected _cepService: CepService,
-    private _formBuilder: FormBuilder,
-    private _snackBar: MatSnackBar,
-    private _router: Router
-  ) {}
+  constructor() {}
 
-  ngOnInit(): void {}
-
-  passwordMatchValidator(form: FormGroup): null | { mismatch: boolean } {
-    const senha = form.get('senha')?.value;
-    const confirmaSenha = form.get('confirmaSenha')?.value;
-
-    return senha === confirmaSenha ? null : { mismatch: true };
+  get personalGroup() {
+    return this.subscribeForm.get('personal') as FormGroup;
+  }
+  get addressGroup() {
+    return this.subscribeForm.get('address') as FormGroup;
+  }
+  get securityGroup() {
+    return this.subscribeForm.get('security') as FormGroup;
   }
 
-  executarPesquisa(): void {}
-
-  get controls() {
-    return this.subscribeForm.controls;
-  }
-
-  getCity() {
-    const zipcode = this.subscribeForm.controls.zipcode.value!;
-    this._cepService.getAddressByCep(zipcode).subscribe({
-      next: (response: Zipcode) => {
-        console.log(response);
-        this.subscribeForm.controls.city.setValue(response.city.toUpperCase());
-        this.subscribeForm.controls.state.setValue(response.state.toUpperCase());
-        this._snackBar.open('Sucesso!', 'Localidade encontrada.', { duration: 2000 });
+  onSubmit() {
+    if (this.subscribeForm.valid) {
+      console.log('Dados do formulário:', this.subscribeForm.value);
+    }
+    this.user.birthday = this.personalGroup.get('birthday')?.value;
+    this.user.city = this.addressGroup.get('city')?.value;
+    this.user.state = this.addressGroup.get('state')?.value;
+    this.user.email = this.personalGroup.get('email')?.value;
+    this.user.name = this.personalGroup.get('name')?.value;
+    this.user.phoneNumber = this.personalGroup.get('phoneNumber')?.value;
+    this.user.password = this.securityGroup.get('password')?.value;
+    this._userService.createAnUser(this.user).subscribe({
+      next: () => {
+        this.snackBarService.open('Usuário criado com sucesso!', 'Fechar', { duration: 3000 });
+        this.router.navigate(['/entrar']);
       },
-      error: (err: HttpErrorResponse) => {
-        this._snackBar.open('Erro de login: ' + err.error.error, '', { duration: 2000 });
+      error: (error: HttpErrorResponse) => {
+        this.snackBarService.open('Erro ao criar o usuário: ' + error.message, 'Fechar', {
+          duration: 3000,
+        });
       },
     });
   }
 
-  onSubmit(): void {
-    if (this.subscribeForm.valid) {
-      this.subscribedUser.name = this.subscribeForm.controls.name.value!;
-      this.subscribedUser.birthday = this.subscribeForm.controls.birthday.value!;
-      this.subscribedUser.password = this.subscribeForm.controls.password.value!;
-      this.subscribedUser.email = this.subscribeForm.controls.email.value!;
-      this.subscribedUser.phoneNumber = this.subscribeForm.controls.phoneNumber.value!.toString();
-      this.subscribedUser.state = this.subscribeForm.controls.state.value!;
-      this.subscribedUser.type = 'user';
-      this.subscribedUser.city = this.subscribeForm.controls.city.value!;
-      this._userService.createAnUser(this.subscribedUser).subscribe({
-        next: (response: User) => {
-          console.log(response);
-          this._snackBar.open('Usuário criado com sucesso!', '', { duration: 2000 });
-          this._router.navigate(['/entrar']);
-        },
-        error: (err: HttpErrorResponse) => {
-          this._snackBar.open('Erro ao criar usuário: ' + err.error.error, '', { duration: 2000 });
-        },
-      });
-    } else {
-      this._snackBar.open('Formulário inválido. Verifique os dados.', '', { duration: 2000 });
-    }
-  }
-
-  passwordValidation(): boolean {
-    return this.subscribeForm.controls.password.value === this.subscribeForm.controls.checkPassword.value;
-  }
-
-  toggleVisibility(event: MouseEvent) {
-    this.hide.update(value => !value);
-    event.stopPropagation();
+  getZipcode() {
+    this._cepService.getAddressByCep(this.addressGroup.get('zipcode')?.value).subscribe({
+      next: (data) => {
+        this.addressGroup.get('city')?.setValue(data.city);
+        this.addressGroup.get('state')?.setValue(data.state);
+      },
+      error: (error) => {
+        console.error('Erro ao buscar o CEP:', error);
+      },
+    });
   }
 }

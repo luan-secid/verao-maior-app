@@ -1,105 +1,137 @@
+@if (isLoading()) {
+<div class="loading-spinner">
+  <mat-spinner></mat-spinner>
+</div>
+} @else {
 <mat-toolbar class="menu">
+  <button mat-icon-button [matMenuTriggerFor]="menu">
+    <mat-icon>menu</mat-icon>
+  </button>
 
-    <button matIconButton class="example-icon" [matMenuTriggerFor]="menu">
-        <mat-icon>menu</mat-icon>
+  <mat-menu #menu="matMenu">
+    <a mat-menu-item routerLink="/inicio">
+      <mat-icon>house</mat-icon>
+      <span>Início</span>
+    </a>
+    <a mat-menu-item routerLink="/meus-agendamentos">
+      <mat-icon>event_available</mat-icon>
+      <span>Meus Agendamentos</span>
+    </a>
+    <button mat-menu-item>
+      <mat-icon>badge</mat-icon>
+      <span>Meus Dados</span>
     </button>
+    <a mat-menu-item href="https://www.verao.pr.gov.br/" target="_blank">
+      <mat-icon>beach_access</mat-icon>
+      <span>Verão Maior 2026</span>
+    </a>
+  </mat-menu>
 
-    <mat-menu #menu="matMenu">
-        <a mat-menu-item href="/inicio">
-            <mat-icon>house</mat-icon>
-            <span>Início</span>
-        </a>
-        <a mat-menu-item href="/meus-agendamentos">
-            <mat-icon>event_available</mat-icon>
-            <span>Meus Agendamentos</span>
-        </a>
-        <button mat-menu-item>
-            <mat-icon>badge</mat-icon>
-            <span>Meus Dados</span>
-        </button>
-        <a mat-menu-item href="https://www.verao.pr.gov.br/" target="_blank">
-            <mat-icon>beach_access</mat-icon>
-            <span>Verão Maior 2026</span>
-        </a>
-    </mat-menu>
+  <span id="logo">
+    <img src="images/verao-maior-menu.png" style="width: 220px" alt="Logo Verão Maior" />
+  </span>
+  <span class="example-spacer"></span>
 
-    <span id="logo">
-        <img src="images/verao-maior-menu.png" style="width: 220px;">
-    </span>
-    <span class="example-spacer"></span>
+  <button mat-icon-button [matMenuTriggerFor]="userMenu">
+    <mat-icon>account_circle</mat-icon>
+  </button>
 
-    <button matIconButton class="example-icon" [matMenuTriggerFor]="userMenu">
-        <mat-icon>account_circle</mat-icon>
+  <mat-menu #userMenu="matMenu">
+    <button mat-menu-item disabled>
+      <mat-icon class="material-icons-outlined">account_circle</mat-icon>
+      <span>{{ user.name }}</span>
     </button>
-
-    <mat-menu #userMenu="matMenu">
-        <button mat-menu-item>
-            <mat-icon class="material-icons-outlined">account_circle</mat-icon>
-            <span>{{user.name}}</span>
-        </button>
-        <button mat-menu-item (click)="logout()">
-            <mat-icon>exit_to_app</mat-icon>
-            <span>SAIR</span>
-        </button>
-    </mat-menu>
-
+    <button mat-menu-item (click)="logout()">
+      <mat-icon>exit_to_app</mat-icon>
+      <span>SAIR</span>
+    </button>
+  </mat-menu>
 </mat-toolbar>
 
-<mat-toolbar>
-    <span>Agendar</span>
+<mat-toolbar color="primary">
+  <span>Agendar Horário</span>
 </mat-toolbar>
 
 <mat-card class="alert-card warning">
-    <mat-card-content>
-        <div class="alert-container">
-            <mat-icon>warning</mat-icon>
-            <div class="alert-content">
-                <mat-card-title>Atenção!</mat-card-title>
-                <p>Para confirmar seu horário verifique no menu a aba <b>'Meus Agendamentos'</b>.</p>
-            </div>
-        </div>
-    </mat-card-content>
+  <mat-card-content>
+    <div class="alert-container">
+      <mat-icon color="warn">warning</mat-icon>
+      <div class="alert-content">
+        <mat-card-title>Atenção!</mat-card-title>
+        <p>Para confirmar seu horário, verifique no menu a aba <b>'Meus Agendamentos'</b>.</p>
+      </div>
+    </div>
+  </mat-card-content>
 </mat-card>
 
 <div class="form-container">
-    @if (!hasSchedule) {
-    <h2>Escolha seu horário:</h2>
-    <form formGroup="scheduleForm">
+  @if (!hasSchedule()) {
+  <h2>Escolha seu horário:</h2>
 
-        <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Nome de Usuário</mat-label>
-            <input matInput formControlName="username" value={{user.name}} readonly>
-        </mat-form-field>
+  <form [formGroup]="scheduleForm" (ngSubmit)="onSubmit()">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Nome de Usuário</mat-label>
+      <input matInput formControlName="name" readonly />
+    </mat-form-field>
 
-        <mat-form-field appearance="outline" class="full-width">
-            <mat-label>E-mail</mat-label>
-            <input matInput formControlName="email" value={{user.email}} readonly>
-        </mat-form-field>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>E-mail</mat-label>
+      <input matInput formControlName="email" readonly />
+    </mat-form-field>
 
-        <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Espaço</mat-label>
-            <mat-select formControlName="selectedSpace" (selectionChange)="getResources($event)">
-                <mat-option value="" selected="selected">SELECIONE</mat-option>
-                @for (space of spaces; track space) {
-                <mat-option [value]="space.value">{{space.viewValue}}</mat-option>
-                }
-            </mat-select>
-        </mat-form-field>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Espaço Desejado</mat-label>
+      <mat-select formControlName="selectedSpace" (selectionChange)="getResources($event)">
+        <mat-option>-- SELECIONE --</mat-option>
+        @for (space of spaces; track space.value) {
+          <mat-option [value]="space.value">{{ space.viewValue }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
 
-        <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Horários</mat-label>
-            <mat-select formControlName="hour" (selectionChange)="validateDisponibility($event)">
-                <mat-option value="" selected="selected">SELECIONE</mat-option>
-                @for (resource of resources; track resource) {
-                <mat-option [value]="resource._id">{{resource.date | date: 'dd/MM/yyyy HH:mm:ss'}}</mat-option>
-                }
-            </mat-select>
-        </mat-form-field>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Disponibilidade de Data e Hora</mat-label>
+      <mat-select formControlName="hour">
+        <div class="search-container">
+          <mat-form-field appearance="fill" class="search-field">
+            <mat-icon matPrefix>search</mat-icon>
+            <input
+              matInput
+              placeholder="Ex: 22/12..."
+              (input)="updateSearch($event)"
+              (keydown)="$event.stopPropagation()"
+            />
+          </mat-form-field>
+        </div>
 
-        <a mat-raised-button color="primary" type="submit" (click)="onSubmit()" [disabled]="scheduleForm.invalid">
-            Agendar meu horário
-        </a>
+        @for (schedule of scheduleFilter(); track schedule._id) {
+          <mat-option [value]="'schedule._id'">
+            {{ schedule.date | date : 'dd/MM/yyyy HH:mm' }}
+          </mat-option>
+        } @empty {
+          <mat-option disabled>Nenhum horário disponível para este espaço.</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
 
-    </form>
-    }
+    <div class="actions">
+      <button
+        mat-raised-button
+        color="primary"
+        type="submit"
+        class="btn-submit"
+        [disabled]="scheduleForm.invalid"
+      >
+        <mat-icon>check_circle</mat-icon>
+        Confirmar Agendamento
+      </button>
+    </div>
+  </form>
+  } @else {
+    <div class="has-schedule-msg">
+      <mat-icon color="primary">info</mat-icon>
+      <p>Você já possui um agendamento ativo. Verifique em 'Meus Agendamentos'.</p>
+    </div>
+  }
 </div>
+}

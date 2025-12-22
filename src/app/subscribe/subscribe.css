@@ -1,95 +1,150 @@
-/* Estilos básicos para centralizar e dimensionar o card */
-
-
-.login-container {
+.page-wrapper {
+  min-height: 100vh;
   display: flex;
-  justify-content: center;
   align-items: center;
-  height: 100vh; /* Ocupa a altura total da viewport */
-  background-color: #f0f2f5; /* Cor de fundo suave */
-}
-
-.login-card {
-  max-width: 400px;
-  width: 90%;
+  justify-content: center;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   padding: 20px;
-  margin: 15px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
-.login-form {
+.glass-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 24px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 500px;
+  padding: 40px;
+}
+
+.form-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.logo {
+  width: 120px;
+  margin-bottom: 15px;
+}
+
+.form-header h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.form-header p {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.custom-stepper {
+  background: transparent !important;
+}
+
+.step-content {
   display: flex;
   flex-direction: column;
+  gap: 8px;
+  padding-top: 20px;
 }
 
-.full-width {
-  width: 100%;
+.grid-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 12px;
 }
 
-.login-card mat-card-header {
-  margin-bottom: 20px;
-  justify-content: center;
-}
-
-.login-card mat-card-title {
-  display: flex;
-  align-items: center;
-  font-size: 24px;
-}
-
-.login-card mat-card-title mat-icon {
-  margin-right: 10px;
-}
-
-.login-button {
-  margin-top: 15px;
-  height: 45px;
-  font-weight: bold;
-}
-
-.action-links {
+.step-actions {
   display: flex;
   justify-content: space-between;
-  margin-top: 10px;
+  margin-top: 20px;
 }
 
-.card-centralizado {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 15px;
+.form-footer {
+  text-align: center;
+  margin-top: 30px;
+  font-size: 0.85rem;
 }
 
-.mat-mdc-card-content {
-    padding: 0px;
-}
-
-.form-input {
-  width: 100%;
-}
-.button-subscribe{
-  width: 100%;
-}
-
-.modern-login-button {
-  width: 100%;
-  height: 52px; /* Mais alto para facilitar o toque/clique */
+.form-footer a {
+  color: #3f51b5;
+  text-decoration: none;
   font-weight: 600;
-  letter-spacing: 1px;
+}
+
+/* Ajuste nos inputs para ficarem mais arredondados */
+::v-deep .mat-mdc-text-field-wrapper {
+  border-radius: 12px !important;
+}
+
+.alert-box {
+  display: flex;
+  align-items: flex-start;
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  position: relative;
+  border: 1px solid;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Variante de Alerta (Amarelo/Laranja) */
+.alert-box.warning {
+  background-color: #fff9eb;
+  border-color: #ffe082;
+  color: #855d00;
+}
+
+.alert-icon {
+  margin-right: 12px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 12px; /* Espaço elegante entre ícone e texto */
-  transition: transform 0.2s, box-shadow 0.2s;
-  background-color: #00c05b !important;
-  color: #002f16;
 }
 
-.modern-login-button:hover:not(:disabled) {
-  transform: translateY(-2px); /* Efeito de levitação suave */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+.alert-icon mat-icon {
+  font-size: 24px;
+  height: 24px;
+  width: 24px;
 }
 
-.modern-login-button mat-icon {
-  margin: 0; /* Reseta margens padrão do Material */
+.alert-content {
+  flex-grow: 1;
+}
+
+.alert-title {
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 4px;
+}
+
+.alert-description {
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.6;
+  padding: 0;
+  display: flex;
+}
+
+.close-btn:hover {
+  opacity: 1;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.search-button {
+  margin-right: 15px;
+  background-color: #3f51b5;
+  color: white;
 }

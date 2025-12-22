@@ -1,4 +1,4 @@
-import { Component, Inject, inject, PLATFORM_ID } from '@angular/core';
+import { Component, computed, Inject, inject, PLATFORM_ID, signal, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { MaterialModule } from '../core/angular/material.module';
@@ -19,32 +19,36 @@ interface Space {
 
 @Component({
   selector: 'app-schedule',
-  imports: [MaterialModule, MatSelectModule, DatePipe],
+  standalone: true, // Definido como standalone conforme padrão Angular 19
+  imports: [MaterialModule, MatSelectModule, DatePipe, FormsModule, ReactiveFormsModule],
   providers: [
     AuthService,
     UserService,
     ResourceService,
-    Router,
-    MatSnackBar,
-    RouterLink,
-    RouterLinkActive,
-    FormsModule,
-    ReactiveFormsModule,
+    // Router e SnackBar não precisam estar nos providers aqui se já estiverem no app.config
   ],
   templateUrl: './schedule.html',
   styleUrl: './schedule.css',
 })
-export class Schedule {
+export class Schedule implements OnInit {
+  // --- Signals de Estado ---
+  isLoading = signal(false);
+  searchTerm = signal('');
+  resources = signal<Resource[]>([]);
+  resource = new Resource();
+
+  // --- Propriedades ---
   token: string = '';
-  hasSchedule: boolean = false;
+  hasSchedule = signal(false); // Transformado em signal para UX reativa
   user: User = new User();
   private fb = inject(FormBuilder);
+  private platformId = inject(PLATFORM_ID);
+
   spaces: Space[] = [
     { value: 'MEU CAMPINHO', viewValue: 'MEU CAMPINHO' },
     { value: 'PARANÁ EM OBRAS', viewValue: 'PARANÁ EM OBRAS' },
   ];
-  resources: Resource[] = [];
-  resource: Resource = new Resource();
+
   scheduleForm = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(3)]],
     email: ['', [Validators.required, Validators.email]],
@@ -54,8 +58,6 @@ export class Schedule {
   });
 
   constructor(
-    @Inject(PLATFORM_ID) private platformId: Object,
-    private _authService: AuthService,
     private _userService: UserService,
     private _resourceService: ResourceService,
     private _route: Router,
@@ -63,117 +65,145 @@ export class Schedule {
   ) {}
 
   ngOnInit() {
+    this.isLoading.set(true);
     this.getUser();
     this.userValidate();
+    // O isLoading será desativado dentro do callback do getUser para melhor UX
   }
 
   getUser() {
     try {
       if (isPlatformBrowser(this.platformId)) {
-        this.user.name = localStorage.getItem('nome')!;
-        this.user.email = localStorage.getItem('email')!;
-        this.token = localStorage.getItem('access_token')!;
+        this.user.name = localStorage.getItem('nome') || '';
+        this.user.email = localStorage.getItem('email') || '';
+        this.token = localStorage.getItem('access_token') || '';
       }
+
+      if (!this.user.email) return;
+
       this._userService.getUserByEmail(this.user.email).subscribe({
         next: (result) => {
           this.user = result;
           this.validateHasSchedule();
+          this.isLoading.set(false);
         },
         error: (err: HttpErrorResponse) => {
-          this._snackBar.open('Erro ao buscar as informações do usuário', '', { duration: 2000 });
+          this._snackBar.open('Erro ao buscar as informações do usuário', 'Fechar', {
+            duration: 3000,
+          });
+          this.isLoading.set(false);
         },
       });
     } catch (error) {
-      localStorage.clear();
-      this._route.navigateByUrl('entrar');
+      this.logout();
     }
   }
 
   userValidate() {
-    if (!this.token) {
-      console.log('Necessário realizar login.');
-      localStorage.clear();
-      this._route.navigateByUrl('entrar');
+    if (isPlatformBrowser(this.platformId) && !this.token) {
+      this.logout();
     }
   }
 
   getResources(event: MatSelectChange) {
-    const now: Date = new Date();
+    this.isLoading.set(true);
     this.scheduleForm.controls.selectedSpace.setValue(event.value);
+
     this._resourceService.getResourceByResource(event.value).subscribe({
       next: (result) => {
-        result.forEach((element) => {
-          if (element.status === 'DISPONÍVEL') {
-            this.resources.push(element);
-            this.validateSchedule();
-          }
-        });
+        // CORREÇÃO: Limpa a lista antes de adicionar novos para evitar duplicidade na tela
+        const availableItems = result
+          .filter((el) => el.status === 'DISPONÍVEL')
+          .map((el) => ({
+            ...el,
+            // Tratamento do fuso horário que discutimos (Removendo o Z para ignorar "esperteza" do Angular)
+            date: new Date(el.date.toString().replace('Z', '')),
+          }));
+
+        this.resources.set(availableItems);
+        this.validateSchedule();
+        this.isLoading.set(false);
       },
-      error: (err: HttpErrorResponse) => {
+      error: () => {
         this._snackBar.open('Erro ao buscar horários', '', { duration: 2000 });
+        this.isLoading.set(false);
       },
     });
   }
 
+  // Otimizado: Agora filtra pela string formatada da data para facilitar a busca do usuário
+  scheduleFilter = computed(() => {
+    const term = this.searchTerm().toLowerCase();
+    const pipe = new DatePipe('pt-BR');
+
+    return this.resources().filter((res) => {
+      const formattedDate = pipe.transform(res.date, 'dd/MM/yyyy HH:mm') || '';
+      return formattedDate.toLowerCase().includes(term);
+    });
+  });
+
+  updateSearch(event: Event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.searchTerm.set(value);
+  }
+
   validateDisponibility(event: MatSelectChange) {
     this.scheduleForm.controls.hour.setValue(event.value);
-    console.log(this.scheduleForm.value);
   }
 
   validateHasSchedule() {
     this._resourceService.getResourceByUserId(this.user._id).subscribe({
       next: (result: Resource[]) => {
-        if (result.length > 0) {
-          this.hasSchedule = true;
-        } else {
-          this.hasSchedule = false;
-        }
+        this.hasSchedule.set(result.length > 0);
       },
-      error: (err: HttpErrorResponse) => {
-        this._snackBar.open('Não foi possível validar se usuário já possui horários.', '', {
-          duration: 2000,
-        });
+      error: () => {
+        console.error('Erro ao validar agendamentos existentes');
       },
     });
   }
 
   validateSchedule() {
-    this.scheduleForm.controls.email.setValue(this.user.email);
-    this.scheduleForm.controls.name.setValue(this.user.name);
-    this.scheduleForm.controls.phoneNumber.setValue(this.user.phoneNumber);
+    this.scheduleForm.patchValue({
+      email: this.user.email,
+      name: this.user.name,
+      phoneNumber: this.user.phoneNumber,
+    });
   }
 
   logout() {
-    localStorage.clear();
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.clear();
+    }
     this._route.navigateByUrl('entrar');
   }
 
   onSubmit() {
-    this._resourceService.getResourceById(this.scheduleForm.controls.hour.value!).subscribe({
-      next: (result) => {
-        this.resource.date = result.date;
+    if (this.scheduleForm.invalid) {
+      this._snackBar.open('Por favor, selecione um horário.', '', { duration: 2000 });
+      return;
+    }
+    const _id = this.scheduleForm.value.hour?.toString() || '';
+    this._resourceService.getResourceById(_id, 'body', true).subscribe({
+      next: (res) => {
+        this.resource = res;
+        this.resource.status = 'INDISPONÍVEL';
+        this.resource.userId = this.user._id;
+
+        this._resourceService.editResourceById(this.resource._id || '', this.resource).subscribe({
+          next: () => {
+            this._snackBar.open('Agendamento realizado com sucesso!', '', { duration: 3000 });
+            this.hasSchedule.set(true);
+            this.resources.set(this.resources().filter((r) => r._id !== this.resource._id));
+          },
+          error: () => {
+            this._snackBar.open('Erro ao confirmar agendamento.', '', { duration: 3000 });
+          },
+        });
       },
-      error: (err: HttpErrorResponse) => {
-        this._snackBar.open('Erro ao validar horários', '', { duration: 2000 });
+      error: () => {
+        this._snackBar.open('Erro ao processar agendamento.', '', { duration: 3000 });
       },
     });
-    this.resource._id = this.scheduleForm.controls.hour.value!;
-    this.resource.status = 'INDISPONÍVEL';
-    this.resource.userId = this.user._id;
-    this.resource.resource = this.scheduleForm.controls.selectedSpace.value!;
-    try {
-      this._resourceService.editResourceById(this.resource._id, this.resource).subscribe({
-        next: (result) => {
-          this._snackBar.open('Horário agendado com sucesso!', '', { duration: 3000 });
-          this.scheduleForm.reset;
-          window.location.reload();
-        },
-        error: (err: HttpErrorResponse) => {
-          this._snackBar.open('Erro ao validar horários', '', { duration: 2000 });
-        },
-      });
-    } catch (error) {
-      this._snackBar.open('Horário selecionado não está disponível.', '', { duration: 2000 });
-    }
+    console.log('Dados para agendamento:', this.scheduleForm.value);
   }
 }
