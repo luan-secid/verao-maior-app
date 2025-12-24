@@ -183,7 +183,8 @@ export class Schedule implements OnInit {
             this._snackBar.open('Agendamento realizado com sucesso!', '', {
               duration: 5000,
               horizontalPosition: 'center',
-              verticalPosition: 'top',
+              verticalPosition: 'bottom',
+              panelClass: ['custom-snackbar-success']
             });
             window.location.reload();
             this.isLoading.set(false);

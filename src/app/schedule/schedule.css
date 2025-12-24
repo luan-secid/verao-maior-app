@@ -143,3 +143,21 @@ h2 {
 .btn-schedule-history mat-icon {
   margin-right: 4px;
 }
+
+/* styles.scss */
+.custom-snackbar-success {
+  --mdc-snackbar-container-color: #2e7d32 !important; /* Modern Angular (v15+) */
+  --mdc-snackbar-supporting-text-color: white !important;
+
+  /* For older versions of Angular Material (<15) */
+  background-color: #2e7d32 !important;
+  color: white !important;
+}
+
+.custom-snackbar-error {
+  --mdc-snackbar-container-color: #d32f2f;
+  --mdc-snackbar-supporting-text-color: white;
+
+  background-color: #d32f2f !important;
+  color: white !important;
+}

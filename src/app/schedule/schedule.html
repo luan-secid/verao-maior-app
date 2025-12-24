@@ -110,7 +110,7 @@
 
         @for (schedule of scheduleFilter(); track schedule._id) {
         <mat-option [value]="schedule._id">
-          {{ schedule.date | date : 'dd/MM/yyyy HH:mm' : 'UTC' }}
+          {{ schedule.date | date : 'dd/MM/yyyy HH:mm'}}
         </mat-option>
         } @empty {
         <mat-option disabled>Nenhum horário livre encontrado.</mat-option>
