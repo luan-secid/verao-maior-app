@@ -124,6 +124,25 @@
         </a>
       </mat-card-content>
     </mat-card>
+    } @if (resources().length > 0) {
+    <mat-card class="info-card">
+      <mat-card-content>
+        <div class="info-container">
+          <mat-icon color="warn" class="info-icon">info</mat-icon>
+          <div class="info-text" style="text-align: start; padding-right: 20px">
+            <h3>Agendamento em Aberto</h3>
+            <p>
+              Você possui agendamentos ativos. É permitido
+              <strong>somente um agendamento por pessoa</strong>.
+            </p>
+            <p class="instruction">
+              Caso queira alterar o horário reservado, você precisa cancelar o agendamento atual e
+              registrar um novo.
+            </p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
     }
   </div>
 </div>

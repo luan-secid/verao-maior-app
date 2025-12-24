@@ -141,7 +141,7 @@ export class Schedule implements OnInit {
     this._resourceService.getResourceByUserId(this.user._id).subscribe({
       next: (result) => {
         // Mapeia apenas os nomes dos recursos que o usuário já tem reserva
-        const bookedNames = result.map(res => res.resource);
+        const bookedNames = result.map((res) => res.resource);
         this.userSchedules.set(bookedNames);
       },
       error: () => console.error('Erro ao validar agendamentos'),
@@ -180,17 +180,23 @@ export class Schedule implements OnInit {
 
         this._resourceService.editResourceById(resourceId, updatedResource).subscribe({
           next: () => {
-            this._snackBar.open('Agendamento realizado com sucesso!', '', { duration: 3000 });
-
-            // Adiciona o nome do recurso agendado à lista de bloqueio do usuário
-            this.userSchedules.update(prev => [...prev, spaceName]);
-
+            this._snackBar.open('Agendamento realizado com sucesso!', '', {
+              duration: 5000,
+              horizontalPosition: 'center',
+              verticalPosition: 'top',
+            });
+            window.location.reload();
             this.isLoading.set(false);
             this.scheduleForm.controls.hour.reset();
           },
           error: () => {
             this._snackBar.open('Erro ao confirmar.', '', { duration: 3000 });
             this.isLoading.set(false);
+          },
+          complete: () => {
+            // Atualiza a lista de agendamentos do usuário
+            const currentSchedules = this.userSchedules();
+            this.userSchedules.set([...currentSchedules, spaceName]);
           },
         });
       },

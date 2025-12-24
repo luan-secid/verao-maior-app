@@ -87,19 +87,14 @@
       </p>
     </div>
     <div class="navigation-wrapper">
-      <a
-        mat-flat-button
-        color="primary"
-        class="btn-schedule-history"
-        href="/meus-agendamentos"
-      >
+      <a mat-flat-button color="primary" class="btn-schedule-history" href="/meus-agendamentos">
         <mat-icon>calendar_month</mat-icon>
         <span>VER MEUS AGENDAMENTOS</span>
       </a>
     </div>
     } @else {
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Horários Disponíveis</mat-label>
+      <mat-label style="margin-left: 15px">Horários Disponíveis</mat-label>
       <mat-select formControlName="hour">
         <div class="search-container">
           <mat-form-field appearance="fill" class="search-field">
