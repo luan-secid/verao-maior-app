@@ -5,7 +5,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { CepService } from '../core/api/cep.service';
 import { UserService } from '../core/api/user.service';
 import { User } from '../core/api/models/user.model';
@@ -14,6 +14,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { provideNgxMask, NgxMaskDirective } from 'ngx-mask';
 import { parse } from 'date-fns';
+
 
 @Component({
   selector: 'app-subscribe',
