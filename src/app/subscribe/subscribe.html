@@ -1,7 +1,7 @@
 <div class="page-wrapper">
   <div class="glass-card">
     <header class="form-header">
-      <img src="images/verao-maior.png" alt="Logo" class="logo" ngSrcset="1x, 2x"/>
+      <img src="images/verao-maior.png" alt="Logo" class="logo" ngSrcset="1x, 2x" />
       <h1>Crie sua conta</h1>
       <p>Preencha os dados abaixo para começar</p>
     </header>
@@ -37,7 +37,7 @@
 
           <mat-form-field appearance="outline">
             <mat-label>Data de Nascimento</mat-label>
-            <input matInput type="date" formControlName="birthday" />
+            <input matInput type="text" mask="d0/M0/0000" formControlName="birthday" />
           </mat-form-field>
 
           <div class="step-actions">

@@ -12,6 +12,8 @@ import { User } from '../core/api/models/user.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { provideNgxMask, NgxMaskDirective } from 'ngx-mask';
+import { parse } from 'date-fns';
 
 @Component({
   selector: 'app-subscribe',
@@ -24,8 +26,9 @@ import { Router } from '@angular/router';
     MatInputModule,
     MatButtonModule,
     MatIconModule,
+    NgxMaskDirective
   ],
-  providers: [CepService, UserService],
+  providers: [CepService, UserService, provideNgxMask()],
   templateUrl: './subscribe.html',
   styleUrl: './subscribe.css',
 })
@@ -73,7 +76,7 @@ export class Subscribe {
     if (this.subscribeForm.valid) {
       console.log('Dados do formulário:', this.subscribeForm.value);
     }
-    this.user.birthday = this.personalGroup.get('birthday')?.value;
+    this.user.birthday = parse(this.personalGroup.get('birthday')?.value, 'dd/MM/yyyy', new Date());
     this.user.city = this.addressGroup.get('city')?.value;
     this.user.state = this.addressGroup.get('state')?.value;
     this.user.email = this.personalGroup.get('email')?.value;
