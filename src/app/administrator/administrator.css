@@ -1,0 +1,164 @@
+.example-spacer {
+    flex: 1 1 auto;
+}
+
+.menu {
+    background-color: #00a1e9;
+    height: 100px;
+}
+
+.example-icon {
+    color: #fff;
+}
+
+#logo {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    flex-direction: column !important;
+}
+
+.example-card {
+    max-width: 100%;
+    margin: 15px;
+}
+
+.example-header-image {
+    background-image: url('./../../../public/images/secid-azul.png');
+    background-size: cover;
+}
+
+.schedule-button {
+    width: 100% !important;
+}
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.7); /* Fundo semi-transparente */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999; /* Garante que fique acima de tudo */
+}
+
+.table-container {
+  margin: 20px;
+  overflow-x: auto;
+}
+
+.responsive-table {
+  width: 100%;
+}
+
+/* Estilos para Mobile (telas menores que 600px) */
+@media screen and (max-width: 600px) {
+  .responsive-table {
+    border: 0;
+
+    thead {
+      display: none; /* Esconde o cabeçalho real */
+    }
+
+    tr {
+      display: block;
+      border: 1px solid #ccc;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      padding: 10px;
+    }
+
+    td {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #eee;
+      padding: 10px 5px;
+      text-align: right;
+      font-size: 14px;
+
+      &:last-child {
+        border-bottom: 0;
+      }
+
+      /* Cria o rótulo usando o atributo data-label */
+      &::before {
+        content: attr(data-label);
+        font-weight: bold;
+        text-transform: uppercase;
+        color: #666;
+        float: left;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 600px) {
+  /* Alinha o botão à direita no mobile */
+  .mat-column-acao {
+    justify-content: flex-end !important;
+  }
+}
+
+.mat-mdc-header-row {
+  background-color: bisque;
+  border: 2px solid tomato !important;
+}
+
+.alert-card {
+  margin-bottom: 24px;
+  border-left: 6px solid #f44336; /* Cor warn do Material */
+  background-color: #fff8f7;    /* Fundo levemente avermelhado */
+}
+
+.alert-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 8px 0;
+}
+
+.alert-icon-wrapper mat-icon {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+}
+
+.alert-content h3 {
+  margin: 0 0 8px 0;
+  font-weight: 700;
+  color: #d32f2f;
+  letter-spacing: 0.5px;
+}
+
+.alert-content p {
+  margin: 0;
+  color: #555;
+  line-height: 1.6;
+}
+
+.alert-footer {
+  margin-top: 8px !important;
+  font-size: 0.9rem;
+  font-style: italic;
+  opacity: 0.8;
+}
+
+/* Ajuste para Mobile */
+@media (max-width: 600px) {
+  .alert-container {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+}
+
+@media screen and (orientation: landscape) and (max-height: 500px) {
+  .alert-card {
+    display: none;
+  }
+}

@@ -1,0 +1,13 @@
+<h2 mat-dialog-title>Deletar atividade?</h2>
+<mat-dialog-content>
+  Quer realmente cancelar a atividade de {{ data.name }} no horário
+  {{ data.horario | date : 'dd/MM/yyyy HH:mm' : 'UTC' }}?
+  <b
+    >O efeito desse cancelamento é irreverssível e o banhista terá que realizar um novo
+    agendamento.</b
+  >
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button matButton mat-dialog-close [mat-dialog-close]="false">Não</button>
+  <button matButton mat-dialog-close cdkFocusInitial [mat-dialog-close]="true">Cancelar</button>
+</mat-dialog-actions>

@@ -5,6 +5,7 @@ import { Subscribe } from './subscribe/subscribe';
 import { Schedule } from './schedule/schedule';
 import { MySchedules } from './my-schedules/my-schedules';
 import { MyData } from './my-data/my-data';
+import { Administrator } from './administrator/administrator';
 
 export const routes: Routes = [
     { path: 'entrar', component: Login },
@@ -13,6 +14,7 @@ export const routes: Routes = [
     { path: 'agendar', component: Schedule },
     { path: 'meus-agendamentos', component: MySchedules },
     { path: 'meus-dados', component: MyData },
+    { path: 'admin', component: Administrator },
     { path: '', redirectTo: '/entrar', pathMatch: 'full' }, // Redirect to login by default
     { path: '**', redirectTo: '/entrar' }
 ];
