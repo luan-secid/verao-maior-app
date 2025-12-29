@@ -25,8 +25,7 @@ export class Login implements OnInit {
   private router = inject(Router);
   private snackBar = inject(MatSnackBar);
   private fb = inject(FormBuilder);
-  protected appVersion: string = packageInfo.version;
-
+  appVersion = packageInfo.version;
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
 
   loadingPage = signal(false);
