@@ -7,6 +7,12 @@ jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies and Build
+        run: npm ci && npx ng build --configuration production --no-cache
+
       - name: Deploy to Firebase Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
@@ -14,4 +20,3 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_VERAOMAIOR_SECID }}
           projectId: veraomaior-secid
           channelId: live
-          entryPoint: "./"
