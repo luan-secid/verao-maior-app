@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "public",
+    "public": "dist/veraomaior-app/browser",
     "ignore": [
       "firebase.json",
       "**/.*",
