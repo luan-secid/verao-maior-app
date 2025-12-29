@@ -14,3 +14,4 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_VERAOMAIOR_SECID }}
           projectId: veraomaior-secid
           channelId: live
+          entryPoint: .
